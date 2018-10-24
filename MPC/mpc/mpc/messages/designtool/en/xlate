@@ -1,0 +1,656 @@
+% Copyright 1999-2007 The MathWorks, Inc.
+% $Revision: 1.1.8.6 $  $Date: 2009/08/08 01:11:21 $
+
+<()InvalidSLModel
+>()Invalid Simulink model.  It must be either the name or the handle of an open Simulink model.
+
+<()SLModelNotOpen
+>()Simulink model "%s" is not open.
+
+<()ToolWaitbarTitle
+>()MPC Design Tool
+
+<()ToolWaitbar1
+>()Loading MPC Design Tool...
+
+<()ToolWaitbar2
+>()Creating the GUI...
+
+<()ToolWaitbar3
+>()Creating an MPC task...
+
+<()ToolWaitbar4
+>()Attach the project to the GUI...
+
+<()ToolWaitbar5
+>()MPC Design Tool is ready.
+
+<()MVQuestionDialogMessage
+>()Specify number of Manipulated Variables (MVs):
+
+<()MVErrorDialogMessage
+>()Invalid entry.  the number of MVs must be a positive scalar integer.
+
+<()DialogTitleError
+>()MPC Error
+
+<()DialogTitleWarning
+>()MPC Warning
+
+<()DialogTitleMessage
+>()MPC Information
+
+<()DialogTitleQuestion
+>()MPC Question 
+
+<()DialogTitleHelp
+>()MPC Help
+
+<()NoMPCBlock
+>()No MPC block is found in the Simulink model.
+
+<()InvalidMPCObject
+>()The MPC Block "%s" refers to an invalid MPC object.
+
+<()EmptyMPCObject
+>()The MPC Block "%s" refers to an empty MPC object.
+
+<()MDSignalInSLButInModel
+>()You have connected a signal to the "Measured Disturbance (md)" inport of the MPC block "%s", but the MPC model referred in this block does not have measured disturbance inputs.
+
+<()InvalidMPCStateObject
+>()The MPC Block "%s" refers to an invalid "mpcdata.mpcstate" object for the initial controller state. Type "help mpcstate" for more information.
+
+<()InvalidMVMOConnection
+>()Cannot linearize when either "mv", "md', or "mo" ports are not connected.
+
+<()PrjFileLoadFailure
+>()Failed to load project file "%s"
+
+<()MPCObjectNotFoundinWorkspace
+>()Specified MPC object "%s" cannot be found in base workspace.
+
+<()MPCTaskNotFound
+>()MPC task not found in the MPC Design Tool.
+
+<()ChooseMPCTask
+>()Choose an MPC design task to work on:
+
+<()MPCControllerNotFound
+>()Cannot find MPC controller "%s" in file "%s".
+
+<()MPCTaskExisting
+>()An MPC design task already exists for the MPC block "%s".
+
+<()JAVANotFound
+>()Java Swing not enabled.  It must be enabled to use the MPC Design Tool.
+
+<()SCDNotFound
+>()Opening the MPC Design Tool without specifying a workspace MPC object requires Simulink Control Design software to linearize the plant model.
+
+<()LinerizationFailed
+>()Linearization of the MPC model failed:
+
+<()EditMPCObjectFailed
+>()The specified MPC object "%s" cannot be modified in the design tool.
+
+<()NewMPCObjectCreated
+>()The specified MPC object "%s" is not defined in the workspace. Do you want to design a new one with that name?
+
+<()StartGUIFailed
+>()Opening MPC object in the MPC Design Tool failed:
+
+<()CreateMPCTaskFailed
+>()Failed to create a MPC Task.
+
+<()CannotTrim
+>()Cannot trim...
+
+<()CannotTrimDetail1
+>()Cannot set up linearization since there is no operating condition constraint task.
+
+<()CannotTrimDetail2
+>()findop failed to find an operating condition.
+
+<()CannotLinearize
+>()Cannot linearize...
+
+<()CannotLinearizeDetail
+>()Could not linearize. You may consider first obtaining a linear model from a Linearization task and then using it in MPC design.
+
+<()InfoLinearizationMVActiveOpen
+>()Temporarily converting the "mv" outport into "active" and "open loop" linearization input point in order to linearize the plant model.
+
+<()InfoLinearizationMVCreateLIP
+>()No linearization input point has been defined at the "mv" outport in the model. A temporary one will be added to perform the linearization.
+
+<()InfoLinearizationMOActiveOpen
+>()Temporarily converting the "mo" inport into "active" and "open loop" linearization output point in order to linearize the plant model.
+
+<()InfoLinearizationMOCreateLOP
+>()No linearization output point has been defined at the "mo" inport in the model. A temporary one will be added to perform the linearization.
+
+<()InfoLinearizationTooManyLOPAtMO
+>()Too many linearization output points at the "mo" inport.  Only one is expected.
+
+<()InfoLinearizationDeactivation
+>()Additional linearization input/output points which are not associated with the "mo", "md" or "mv" ports have been ignored when performing the linearization.
+
+<()InfoLinearizationMDActiveOpen
+>()Temporarily converting the "md" inport into "active" and "open loop" linearization input point in order to linearize the plant model.
+
+<()InfoLinearizationMDCreateLIP
+>()No linearization input point has been defined at the "md" inport in the model. A temporary one will be added to perform the linearization.
+
+<()InfoLinearizationTooManyLIPAtMD
+>()Too many linearization input points at the "md" inport.  Only one is expected.
+
+<()InfoGUIDestroy
+>()The MPC block "%s" is using the MPC controller "%s". Do you want to export it to the workspace so that this block continues to reflect the most recent changes made in the MPC Design Tool?
+
+<()InvalidSignalVectorSize
+>()Invalid "%s" signal. It must be a vector of dimension %d.
+
+<()InvalidSignalVectorReal
+>()Invalid "%s" signal. It must be real valued.
+
+<()InvalidSignalFieldTime
+>()Invalid "%s" signal. It must have a field "time". (See "To Workspace" block)
+
+<()InvalidSignalValueTime
+>()Invalid "%s" signal. Field "time" must be real valued.
+
+<()InvalidSignalFieldSignal
+>()Invalid "%s" signal. It must have a field "signals". (See "To Workspace" block)
+
+<()InvalidSignalFieldSignalValues
+>()Invalid "%s" signal. Field "signals" must have a subfield "values". (See "To Workspace" block)
+
+<()InvalidSignalValueSignal
+>()Invalid "%s" signal. Field "signals.values" must be real valued.
+
+<()InvalidSignalDimensionSize
+>()Invalid "%s" signal. The expected signal dimension is %d.
+
+<()DirectFeedThrough
+>()Prediction model in "%s" has direct feedthrough for at least one manipulated variable. MPC calculation aborted.
+
+<()CreateMPCControllerFailed
+>()MPC controller could not be created for "%s". Simulations using "%s" will not run. Error message: %s
+
+<()InvalidEstimationModel
+>()You have specified "%s" to model "%s", but "%s" is an invalid MATLAB expression or does not refer to a LTI object defined in MATLAB workspace.
+
+<()InvalidEstimationModelOutput
+>()Chosen model "%s" has %i outputs but %i is expected.
+
+<()InvalidEstimationModelGeneral
+>()Bad entry on estimation tab "%s" of controller "%s".
+
+<()InvalidModelHorizonTabIntervalError
+>()"Interval" must be a positive finite real number.
+
+<()InvalidModelHorizonTabHorizonError
+>()"Horizon" must be a positive finite integer.
+
+<()InvalidModelHorizonTabCustomMoveError
+>()"Custom move allocation" must be an integer or a row vector of integers.
+
+<()InvalidLimitValue
+>()Scalar or vector is expected.
+
+<()InvalidWeightValue
+>()Non-negative scalar or vector is expected.
+
+<()InvalidScalarWeightValue
+>()A non-negative finite scalar weight is expected.
+
+<()InvalidNoiseValue
+>()Disturbance to unmeasured output must be white.
+
+<()DuplicatedControllerName
+>()Name "%s" is already in use. Reverting to "%s".
+
+<()UnexpectedIntegrator
+>()Unexpected integrator on unmeasured output %i
+
+<()ControllerSizeConflict1
+>()Controllers designed or imported previously use %i plant input(s) and %i plant output(s).
+
+<()ControllerSizeConflict2
+>()Controller to be imported "%s" is designed for %i plant input(s) and %i plant output(s).
+
+<()ControllerSizeConflict3
+>()Import of controller "%s" aborted.
+
+<()DuplicatedControllerNode
+>()Name "%s" is already in use.  Choose another one.
+
+<()DeleteOnlyController1
+>()You cannot delete your only controller.
+
+<()DeleteOnlyController2
+>()If you wish to clear it and start over, first create a new controller, then delete this one.
+
+<()DeleteControllerQuestion
+>()Do you really want to delete controller "%s"?
+
+<()DeleteControllerWarning1
+>()Controller "%s" was being used in at least one simulation scenario.
+
+<()DeleteControllerWarning2
+>()All references to controller "%s" have been replaced by "%s".
+
+<()NewControllerName
+>()Name the new controller:
+
+<()ControllerText1
+>()Click the "Display" button to see controller details.
+
+<()ControllerText2
+>()NOTE:  controller object will be recalculated.
+
+<()InvalidNominalValue
+>()"Nominal" value must be a scalar, finite number.
+
+<()IOTableEmpty
+>()One or both of the input/output signal tables are empty. Consequently the operating condition cannot be derived from this source.
+
+<()IOTableMOMismatch
+>()Mismatch between the width of the "Measured Outputs" in operating condition constraint and the number of "Measured Outputs" in the output signal table.
+
+<()IOTableMVMismatch
+>()Mismatch between the width of the "Manipulated Variables" in operating condition constraint and the number of "Manipulated Variables" in the input signal table. 
+
+<()IOTableMDMismatch
+>()Mismatch between the width of the "Measured Disturbance Variables" in operating condition constraint and the number of "Measured Disturbance Variables" in the input signal table. 
+
+<()IOTableOneMVMO
+>()The MPC input and output signal tables must have at least one "Manipulated Variable" and "Measured Output" respectively.
+
+<()ClearAction1
+>()Clearing will erase all models, controllers, and scenarios in this design.  You might want to save the design before clearing.
+
+<()ClearAction2
+>()Clear "%s" now?
+
+<()DeleteProjectAction
+>()Are you sure you want to delete project "%s"?
+
+<()SpecifyNumberMV
+>()Specify number of Manipulated Variables (MVs) for MPC block "%s"
+
+<()InvalidNumberMV
+>()Invalid Entry.  The number of Manipulated Variables must be a positive integer.
+
+<()WizardInfoLinearPoint
+>()Setting up linearization i/o points and output constraints...
+
+<()WizardInfoLinearFailed
+>()Could not assign linearization i/o points. Message returned was:
+
+<()WizardInfoTrim
+>()Trimming the model...
+
+<()WizardInfoSLStateUpdated
+>()The structure of the Simulink model has changed since the operating point was computed. The most likely cause is that a previously empty MPC block was replaced by a valid MPC object, which has changed the number of states in the model. Create a new operating point for this model before linearizing.
+
+<()WizardInfoLinearizeFailed
+>()Cannot linearize model
+
+<()WizardInfoBadOp
+>()The selected operating point node does not contain the output constraint information needed to define the nominal values.
+
+<()WizardInfoLinearizing
+>()Linearizing the plant model seen by the MPC block...
+
+<()WizardInfoAddingModel
+>()Adding linearized plant model to the project...
+
+<()WizardInfoSyncOp
+>()The operating condition specifications could not be synchronized with the model %s due to the following error:
+
+<()OpenLoopOpCondMismatch
+>()Cannot modify operating point to open loop state.
+
+<()LoadingOverwriteMPC
+>()There is already a variable "%s" in the workspace. Overwrite?
+
+<()LoadingMismatchMPC
+>()There is a mismatch between the saved project and the associated Simulink model.
+
+<()LoadingSLNotOpen
+>()Cannot open the Simulink model containing MPC block "%s".
+
+<()BlockNoLongerExist
+>()The MPC block "%s" is no longer in the model.
+
+<()SelectLP
+>()Select a linearization input/output point to work with.
+
+<()ModelImportFailedSize
+>()Model "%s" contains %i inputs and %i outputs. Must have at least one of each. Aborting model import.
+
+<()ModelImportFailedComplex
+>()LTI model "%s" is complex.  It cannot be imported to the MPC Design Tool.
+
+<()ModelImportFailedArray
+>()"%s" is an array of LTI Models.  It cannot be imported to the MPC Design Tool.
+
+<()ModelImportFailedSS
+>()Model "%s" cannot be converted to state space. It probably contains an improper transfer function. Import aborted.
+
+<()ModelImportQuestionOverload1
+>()Model "%s" contains %i input(s) and %i output(s).  Models imported previously contain %i input(s) and %i output(s).
+
+<()ModelImportQuestionOverload2
+>()In order to import model "%s" your design must be cleared.  All controllers and scenarios will be erased.
+
+<()ModelImportQuestionOverload3
+>()Do you wish to clear design "%s"?
+
+<()ModelImportQuestionName1
+>()Imported model "%s" contains at least one "InputName" or "OutputName" that conflicts with your current signal name settings.
+
+<()ModelImportQuestionName2
+>()Conflicting names in "%s" will be overwritten.
+
+<()ModelImportQuestionGroup1
+>()Imported model "%s" contains at least one "%s" Group that conflicts with your current signal type settings.
+
+<()ModelImportQuestionGroup2
+>()Conflicting types in "%s" will be overwritten.
+
+<()ModelImportQuestionFeedtrought1
+>()Model "%s" has direct input/output feedthrough between the following manipulated variable input(s) and measured output(s):
+
+<()ModelImportQuestionFeedtrought2
+>()Controller calculations will fail unless you change the manipulated variable input(s) to measured disturbance or unmeasured disturbance.
+
+<()ModelImportQuestionModelExist
+>()Model "%s" has already been loaded. Do you want to replace it?
+
+<()ModelImportQuestionModelDuplicate
+>()Model "%s" cannot be imported because its %s signal names include the following duplicate(s):
+
+<()ModelNameChanged1
+>()Model "%s" was being used in at least one controller or scenario.
+
+<()ModelNameChanged2
+>()All references to model "%s" have been replaced by "%s".
+
+<()ModelDeleteQuestion1
+>()"%s" is your only model.  Deleting it will reset project "%s" to its initial state.
+
+<()ModelDeleteQuestion2
+>()All data you have entered will be erased.
+
+<()ModelDeleteQuestion3
+>()Do you wish to delete model "%s"?
+
+<()ModelNameDuplicate
+>()Another model is named "%s". Please enter a different name.
+
+<()ModelImportFirst
+>()You must import a model, controller, or design before selecting the "%s" node.
+
+<()ModelOneMVOneMO
+>()MPC must have at least one "Manipulated Variable" and one "Measured Output".
+
+<()ModelDuplicateMV
+>()Duplicate input signal name(s): "%s"
+
+<()ModelDuplicateMO
+>()Duplicate output signal name(s): "%s"
+
+<()SignalTypeOverwrite1
+>()You have changed signal types.
+
+<()SignalTypeOverwrite2
+>()In order to use these changes, you must overwrite all previously created controllers and scenarios.
+
+<()SignalTypeOverwrite3
+>()Do you wish to overwrite them?
+
+<()SignalInitialValueSize
+>()"Initial Value" and "Size" must be finite.
+
+<()SignalInitialTimePeriod
+>()"Time" and "Period" must be positive, finite.
+
+<()DuplicatedScenarioName
+>()Name "%s" is already in use. Reverting to "%s".
+
+<()SimulationFailedShortDuration
+>()Simulation aborted because specified duration is less than the control interval.
+
+<()SimulationFailedFeedThrough
+>()Model "%s" in scenario "%s" has direct feedthrough for at least one manipulated variable. Simulation aborted.
+
+<()SimulationFailedOther
+>()Simulation using "%s" will not run. Diagnostic information follows: Error ID = %s, Message = %s
+
+<()DeleteOnlyScenario1
+>()You cannot delete your only scenario.
+
+<()DeleteOnlyScenario2
+>()If you wish to clear it and start over, first create a new scenario, then delete this one.
+
+<()DeleteScenarioQuestion
+>()Do you really want to delete scenario "%s"?
+
+<()InvalidDurationValue
+>()Duration must be positive, finite.
+
+<()NewScenarioName
+>()Name the new scenario:
+
+<()NoSuchScenario
+>()Could not find scenario "%s".
+
+<()NoScenario
+>()No simulation scenarios defined yet.
+
+<()IDModelToSSFailed
+>()System Identification model "%s" could not be converted to state space.
+
+<()UnableToLoad
+>()Unable to load selected item.
+
+<()FileNotExist
+>()File "%s" does not exist.
+
+<()InvalidVarName
+>()"%s" is an invalid MATLAB variable name. Choose a name that contains no blanks, special characters, etc. and try again.
+
+<()OverwriteMLVar
+>()"%s" already exists in the MATLAB workspace. Do you wish to overwrite it with the exported object? (If "No", you may then assign a new name or cancel.)
+
+<()OverwriteMLFile
+>()File "%s" exists. Do you wish to overwrite it?
+
+<()NoRefSignal
+>()There is no reference signal defined for this plot.
+
+<()UnrecognizedInputGroup
+>()Imported model contains an unrecognized InputGroup "%s".  Entries in "%s" will be classified as manipulated variables.
+
+<()MultipleSignal
+>()Imported model assigns multiple signal types to one or more inputs or outputs.  Verify assignments for the following: "%s"
+
+<()NoMVinPlantModel
+>()Plant model must contain at least one Manipulated Variable.  Your model did not contain any, so all input signal types have been set to manipulated.  Make appropriate assignments in the "Input signal properties" table.
+
+<()UnrecognizedOutputGroup
+>()Imported model contains an unrecognized OutputGroup "%s".  Entries in "%s" will be classified as measured outputs.
+
+<()NoMOinPlantModel
+>()Plant model must contain at least one Measured Output.  Your model did not contain any, so all output signal types have been set to measured.  Make appropriate assignments in the "Output signal properties" table.
+
+<()OverwriteProject
+>()MPC task "%s" exists and it is not overwritten. Rename "%s" before creating another new task.
+
+<()OverwriteProjectQuestion
+>()Project "%s" exists. Do you want to replace it?
+
+<()CreateNewProjectCancel
+>()Creation of new MPC task cancelled.
+
+<()DeletingProject
+>()Deleting MPC task "%s".
+
+<()CreatedProject
+>()MPC task "%s" created.
+
+<()ImportControllerCancel
+>()Import of controller "%s" aborted.
+
+<()AddingPlantModel
+>()Adding model "%s" to plant models list.
+
+<()AddedPlantModel
+>()Controller "%s" added to task "%s".
+
+<()DuplicatedEntry
+>()Duplicate %s name(s): "%s"
+
+<()ControllerSaved
+>()Controller "%s" was saved as "%s" in %s.
+
+<()ExportControllerCancel
+>()Export of controller "%s" cancelled.
+
+<()InitializingSettings
+>()Initializing controller "%s" settings.
+
+<()AddingNodeToTree
+>()Adding node "%s" to the explorer tree.
+
+<()LoadingPlantModel
+>()Loading selected plant model
+
+<()LoadingController
+>()Loading selected controller
+
+<()ExportingObject
+>()Exporting "%s"
+
+<()FinishingExportingObject
+>()Finishing exporting "%s"
+
+<()NoControllerAvailable
+>()No controller available.
+
+<()PlantModelImported
+>()Plant model "%s" was imported.
+
+<()PlantModelImportCancel
+>()Import of model "%s" was canceled.
+
+<()WizardStep1
+>()Configuring the Control and Estimation Tools Manager
+
+<()WizardStep2
+>()Setting up linearization input/output points and output constraints
+
+<()WizardStep3
+>()Finding operating point
+
+<()WizardStep4
+>()Linearizing the plant
+
+<()WizardStep5
+>()Building MPC controller
+
+<()WizardTitle
+>()Building MPC Design Project...
+
+<()ConfiguringSCD
+>()Configuring Simulink Control Design for MPC...
+
+<()ProgressiveBarHeader
+>()Building a new MPC controller by deriving a plant model from Simulink
+
+<()FindingOP
+>()Determining operating point...
+
+<()SuccessfulWizard
+>()Project build successfully completed. Click "OK" button.
+
+<()TimeVaryingWeightMVError
+>()Time-varying weights on manipulated variables must have the same length.
+
+<()TimeVaryingWeightMVRateError
+>()Time-varying weights on the rate of change of manipulated variables must have the same length.
+
+<()TimeVaryingWeightOVError
+>()Time-varying weights on the output variables must have the same length.
+
+<()ExportControllerRequired
+>()Failed to find operating condition because MPC controller %s does not exist in base workspace.  Export it from the your MPC Task first.
+
+<()FailedOPFromNominal
+>()Failed to find operating condition from the nominal values in MPC Task.
+
+<()BlockIsNotConnected
+>()MPC block is not connected to the rest of the simulink model.  Linearization abandoned.
+
+<()InvalidNMV
+>()Number of manipulated variable is not specified.
+
+<()NoMPCSelected
+>()To design or delete a MPC controller, the corresponding checkbox in the table has to be selected.
+
+<()UnableToDeleteMPC
+>()You must have at least one MPC controller in the Multiple MPC Controllers block.
+
+<()InvalidPerfFunc
+>()Invalid Performance Function.  It must be a string.
+
+<()InvalidWeightsForAdvisor
+>()Tuning advisor does not support sensitivity analysis on MPC with time-varying weights or non-diagonal weights.
+
+<()AdvisorTitle
+>()MPC Tuning Advisor for Task
+
+<()AdvisorTableHeaderTooltip
+>()<html>In Column 2, specify performance weights that are used in the selected performance function.<br>In Column 5, specify new controller weights based on the sensitivity analysis in Column 3 and 4.</html>
+
+<()AdvisorBaselineButtonTooltip
+>()Click to evaluate original MPC, which sets up the performance baseline for MPC tuning.
+
+<()AdvisorAnalyzeButtonTooltip
+>()Click to compare the performance between original MPC and the MPC with new weights.
+
+<()AdvisorModalCheckBoxTooltip
+>()Check/Uncheck to make the tuning advisor dialog modal/not modal. 
+
+<()AdvisorUpdateButtonTooltip
+>()Click to update the controller in the MPC Design Task with new weights.
+
+<()AdvisorRestoreButtonTooltip
+>()Click to revert to the original controller weights in Column 5.
+
+<()AdvisorCloseButtonTooltip
+>()Click to close the tuning advisor.  Performance weights will be saved on exit.
+
+<()AdvisorPerfFuncTooltip
+>()<html>Select desired closed-loop performance measurement:<br>ISE - Integral of Square Error<br>IAE - Integral of Absolute Error<br>ITSE - Integral of Time-Weighted Square Error<br>ITAE - Integral of Time-Weighted Absolute Error</html>
+
+<()AdvisorTuningErrorScenario
+>()Scenario in design does not exist anymore.  Please restart tuning advisor.
+
+<()AdvisorTuningErrorController
+>()Controller in design does not exist anymore.  Please restart tuning advisor.
+
+<()AdvisorTuningErrorMismatch
+>()Controller in design does not match the controller in scenario.
+
+<()AdvisorTuningUpdateSuccessfully
+>()Controller in MPC Tool has been successfully updated with weights in current tuning.
+
+<()CETMNewTaskMPCController
+>()Model Predictive Control Task: MPC Controller
+
+<()CETMNewTaskMultipleMPCControllers
+>()Model Predictive Control Task: Multiple MPC Controllers

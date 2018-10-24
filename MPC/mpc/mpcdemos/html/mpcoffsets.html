@@ -1,0 +1,186 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   <!--
+This HTML is auto-generated from an M-file.
+To make changes, update the M-file and republish this document.
+      --><title>MPC for a Nonlinear Plant Under Nonzero Nominal Conditions</title><meta name="generator" content="MATLAB 7.10"><meta name="date" content="2010-01-05"><meta name="m-file" content="mpcoffsets"><link rel="stylesheet" type="text/css" href="../../../matlab/demos/private/style.css"></head><body><div class="header"><div class="left"><a href="matlab:edit mpcoffsets">Open mpcoffsets.m in the Editor</a></div><div class="right"><a href="matlab:echodemo mpcoffsets">Run in the Command Window</a></div></div><div class="content"><h1>MPC for a Nonlinear Plant Under Nonzero Nominal Conditions</h1><!--introduction--><!--/introduction--><h2>Contents</h2><div><ul><li><a href="#2">Open-Loop Model: Linearize Nonlinear System</a></li><li><a href="#5">MPC Controller Setup</a></li><li><a href="#7">Simulation Using Simulink&reg; (Nonlinear Model + MPC Controller)</a></li><li><a href="#8">Simulation Using SIM Command (Linear model + MPC Controller)</a></li></ul></div><p>This demonstration shows how to work with offsets in plant models obtained by linearization of nonlinear Simulink&reg; models. We consider the MPC control of a MIMO nonlinear system with nonzero offsets at linearization, 3 manipulated variables, 2 measured outputs.</p><h2>Open-Loop Model: Linearize Nonlinear System<a name="2"></a></h2><pre class="codeinput"><span class="keyword">if</span> ~mpcchecktoolboxinstalled(<span class="string">'simulink'</span>)
+    disp(<span class="string">'Simulink(R) is required to run this demo.'</span>)
+    <span class="keyword">return</span>
+<span class="keyword">end</span>
+<span class="keyword">if</span> ~mpcchecktoolboxinstalled(<span class="string">'scd'</span>)
+    disp(<span class="string">'Simulink Control Design(R) is required to run this demo.'</span>)
+    <span class="keyword">return</span>
+<span class="keyword">end</span>
+</pre><p>The model is described in the Simulink&reg; diagram NL_OFFSETS.MDL.  We linearize the model at the initial condition.  Functions from Simulink Control Design such as "operspec", "findop", "linio" and "linearize", are used to generate the linear state space model.</p><p>Create operating point specification.</p><pre class="codeinput">op = operspec(<span class="string">'nl_offsets'</span>);
+<span class="comment">% Compute initial condition.</span>
+[op_point op_report] = findop(<span class="string">'nl_offsets'</span>,op);
+<span class="comment">% Obtain nominal values of x, y and u.</span>
+x0 = [op_report.States(1).x;op_report.States(2).x];
+y0 = op_report.Outputs.y;
+u0 = op_report.Inputs.u;
+<span class="comment">% Obtain linear model at the initial condition.</span>
+sys = linearize(<span class="string">'nl_offsets'</span>, op_point);
+</pre><pre class="codeoutput">
+ Operating Point Search Report:
+---------------------------------
+
+ Operating Report for the Model nl_offsets.
+ (Time-Varying Components Evaluated at time t=0)
+
+Operating point specifications were successfully met. 
+
+States: 
+----------
+(1.) nl_offsets/Integrator
+      x:         0.575      dx:    -1.82e-014 (0)
+(2.) nl_offsets/Integrator2
+      x:          2.15      dx:    -8.38e-012 (0)
+ 
+Inputs: 
+----------
+(1.) nl_offsets/In1
+      u:         -1.25    [-Inf Inf]
+ 
+Outputs: 
+----------
+(1.) nl_offsets/Out1
+      y:        -0.529    [-Inf Inf]
+ 
+</pre><h2>MPC Controller Setup<a name="5"></a></h2><pre class="codeinput">Ts=0.1;                 <span class="comment">% Sampling time</span>
+
+clear <span class="string">Model</span>
+Model.Plant=sys;        <span class="comment">% Plant prediction model</span>
+
+Model.Nominal.X=x0;     <span class="comment">% State vector at linearization</span>
+Model.Nominal.U=u0;     <span class="comment">% Input vector at linearization</span>
+Model.Nominal.Y=y0;     <span class="comment">% Output vector at linearization</span>
+
+Model.Noise=0.1;        <span class="comment">% Output measurement noise model (white noise, zero mean, variance=0.01)</span>
+
+p=20;
+m=3;
+
+weights=[]; <span class="comment">% use default weights</span>
+mpc_controller=mpc(Model,Ts,p,m,weights,struct(<span class="string">'Max'</span>,0.2));
+</pre><pre class="codeoutput">--&gt;The "Weights.ManipulatedVariables" property of "mpc" object is empty. Assuming default 0.00000.
+--&gt;The "Weights.ManipulatedVariablesRate" property of "mpc" object is empty. Assuming default 0.10000.
+--&gt;The "Weights.OutputVariables" property of "mpc" object is empty. Assuming default 1.00000.
+</pre><p>Reference signal for output vector</p><pre class="codeinput">r0=1.5*y0;
+</pre><h2>Simulation Using Simulink&reg; (Nonlinear Model + MPC Controller)<a name="7"></a></h2><pre class="codeinput">Tstop=10;
+open_system(<span class="string">'mpc_offsets'</span>)      <span class="comment">% Open Simulink(R) Model</span>
+sim(<span class="string">'mpc_offsets'</span>,Tstop);       <span class="comment">% Start Simulation</span>
+</pre><pre class="codeoutput">--&gt;Converting model to discrete time.
+--&gt;Integrated white noise added on measured output channel #1.
+--&gt;MPC problem is constrained and "ManipulatedVariables.RateMin" is not completely specified or has infinite values.
+   Setting values to -10 to prevent numerical problems in QP.
+</pre><img vspace="5" hspace="5" src="mpcoffsets_01.png" alt=""> <img vspace="5" hspace="5" src="mpcoffsets_02.png" alt=""> <img vspace="5" hspace="5" src="mpcoffsets_03.png" alt=""> <h2>Simulation Using SIM Command (Linear model + MPC Controller)<a name="8"></a></h2><pre class="codeinput">Tf=round(Tstop/Ts);
+r=r0*ones(Tf,1);
+[y1,t1,u1,x1,xmpc1]=sim(mpc_controller,Tf,r);
+</pre><pre class="codeoutput">--&gt;Converting model to discrete time.
+--&gt;Integrated white noise added on measured output channel #1.
+</pre><p>Plot and compare results.</p><pre class="codeinput">subplot(121)
+plot(y.time,y.signals.values,t1,y1,t1,r)
+legend(<span class="string">'Nonlinear'</span>,<span class="string">'Linearized'</span>,<span class="string">'Reference'</span>)
+title(<span class="string">'output'</span>)
+grid
+subplot(122)
+plot(u.time,u.signals.values,t1,u1)
+legend(<span class="string">'Nonlinear'</span>,<span class="string">'Linearized'</span>)
+title(<span class="string">'input'</span>)
+grid
+</pre><img vspace="5" hspace="5" src="mpcoffsets_04.png" alt=""> <pre class="codeinput">bdclose(<span class="string">'mpc_offsets'</span>)
+</pre><p class="footer">Copyright 1990-2007 The MathWorks, Inc.<br>
+          Published with MATLAB&reg; 7.10</p><p class="footer" id="trademarks">MATLAB and Simulink are registered trademarks of The MathWorks, Inc.  Please see <a href="http://www.mathworks.com/trademarks">www.mathworks.com/trademarks</a> for a list of other trademarks owned by The MathWorks, Inc.  Other product or brand names are trademarks or registered trademarks of their respective owners.</p></div><!--
+##### SOURCE BEGIN #####
+%% MPC for a Nonlinear Plant Under Nonzero Nominal Conditions
+
+%%
+% This demonstration shows how to work with offsets in plant models 
+% obtained by linearization of nonlinear Simulink(R) models. We consider
+% the MPC control of a MIMO nonlinear system with nonzero offsets at 
+% linearization, 3 manipulated variables, 2 measured outputs.
+%
+% Copyright 1990-2007 The MathWorks, Inc.
+% $Revision: 1.1.8.10 $  $Date: 2009/11/09 16:28:19 $   
+
+%% Open-Loop Model: Linearize Nonlinear System
+if ~mpcchecktoolboxinstalled('simulink')
+    disp('Simulink(R) is required to run this demo.')
+    return
+end
+if ~mpcchecktoolboxinstalled('scd')
+    disp('Simulink Control Design(R) is required to run this demo.')
+    return
+end
+
+%%
+% The model is described in the Simulink(R) diagram NL_OFFSETS.MDL.  We
+% linearize the model at the initial condition.  Functions from Simulink
+% Control Design such as "operspec", "findop", "linio" and "linearize", are
+% used to generate the linear state space model.
+%%
+% Create operating point specification.
+op = operspec('nl_offsets');
+% Compute initial condition.
+[op_point op_report] = findop('nl_offsets',op); 
+% Obtain nominal values of x, y and u.
+x0 = [op_report.States(1).x;op_report.States(2).x];
+y0 = op_report.Outputs.y;
+u0 = op_report.Inputs.u; 
+% Obtain linear model at the initial condition.
+sys = linearize('nl_offsets', op_point); 
+
+%% MPC Controller Setup
+Ts=0.1;                 % Sampling time
+
+clear Model
+Model.Plant=sys;        % Plant prediction model
+
+Model.Nominal.X=x0;     % State vector at linearization
+Model.Nominal.U=u0;     % Input vector at linearization
+Model.Nominal.Y=y0;     % Output vector at linearization
+
+Model.Noise=0.1;        % Output measurement noise model (white noise, zero mean, variance=0.01)
+
+p=20;
+m=3;
+
+weights=[]; % use default weights
+mpc_controller=mpc(Model,Ts,p,m,weights,struct('Max',0.2));
+
+%%
+% Reference signal for output vector
+r0=1.5*y0;
+
+%% Simulation Using Simulink(R) (Nonlinear Model + MPC Controller)
+Tstop=10;
+open_system('mpc_offsets')      % Open Simulink(R) Model
+sim('mpc_offsets',Tstop);       % Start Simulation
+
+%% Simulation Using SIM Command (Linear model + MPC Controller)
+Tf=round(Tstop/Ts);
+r=r0*ones(Tf,1);
+[y1,t1,u1,x1,xmpc1]=sim(mpc_controller,Tf,r);
+
+%%
+% Plot and compare results.
+subplot(121)
+plot(y.time,y.signals.values,t1,y1,t1,r)
+legend('Nonlinear','Linearized','Reference')
+title('output')
+grid
+subplot(122)
+plot(u.time,u.signals.values,t1,u1)
+legend('Nonlinear','Linearized')
+title('input')
+grid
+
+%%
+bdclose('mpc_offsets')          
+displayEndOfDemoMessage(mfilename)
+
+##### SOURCE END #####
+--></body></html>

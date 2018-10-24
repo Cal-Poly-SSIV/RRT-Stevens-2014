@@ -1,0 +1,136 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   <!--
+This HTML is auto-generated from an M-file.
+To make changes, update the M-file and republish this document.
+      --><title>MPC with Non-Diagonal Weight Matrices</title><meta name="generator" content="MATLAB 7.10"><meta name="date" content="2010-01-05"><meta name="m-file" content="mpcweightsdemo"><link rel="stylesheet" type="text/css" href="../../../matlab/demos/private/style.css"></head><body><div class="header"><div class="left"><a href="matlab:edit mpcweightsdemo">Open mpcweightsdemo.m in the Editor</a></div><div class="right"><a href="matlab:echodemo mpcweightsdemo">Run in the Command Window</a></div></div><div class="content"><h1>MPC with Non-Diagonal Weight Matrices</h1><!--introduction--><!--/introduction--><h2>Contents</h2><div><ul><li><a href="#2">MPC Controller Setup</a></li><li><a href="#8">Closed-Loop MPC Simulation Using the Command SIM</a></li><li><a href="#10">MPC Simulation Using Simulink&reg;</a></li></ul></div><p>This demonstration shows how to use non-diagonal weight matrices.</p><h2>MPC Controller Setup<a name="2"></a></h2><p>We start defining the plant to be controlled.</p><pre class="codeinput">sys=ss(tf({1,1;1,2},{[1 .5 1],[.7 .5 1];[1 .4 2],[1 2]}),<span class="string">'min'</span>);
+</pre><p>Now, setup an MPC controller object.</p><pre class="codeinput">Ts=.1;             <span class="comment">% sampling time</span>
+model=c2d(sys,Ts); <span class="comment">% prediction model</span>
+</pre><p>Define prediction and control horizons.</p><pre class="codeinput">p=20;       <span class="comment">% prediction horizon</span>
+m=2;        <span class="comment">% control horizon</span>
+</pre><p>Let us assume default value for weights and build the MPC object.</p><pre class="codeinput">MPCobj=mpc(model,Ts,p,m);
+</pre><pre class="codeoutput">--&gt;The "Weights.ManipulatedVariables" property of "mpc" object is empty. Assuming default 0.00000.
+--&gt;The "Weights.ManipulatedVariablesRate" property of "mpc" object is empty. Assuming default 0.10000.
+--&gt;The "Weights.OutputVariables" property of "mpc" object is empty. Assuming default 1.00000.
+</pre><p>Define constraints on the manipulated variable.</p><pre class="codeinput">clear <span class="string">MV</span>
+MV(1)=struct(<span class="string">'Min'</span>,-3,<span class="string">'Max'</span>,3,<span class="string">'RateMin'</span>,-100,<span class="string">'RateMax'</span>,100);
+MV(2)=struct(<span class="string">'Min'</span>,-2,<span class="string">'Max'</span>,2,<span class="string">'RateMin'</span>,-100,<span class="string">'RateMax'</span>,100);
+MPCobj.MV=MV;
+</pre><p>Define non-diagonal output weight. Note that it is specified inside a cell!</p><pre class="codeinput">OW=[1 -1]'*[1 -1];
+
+<span class="comment">% Non-diagonal output weight, corresponding to ((y1-r1)-(y2-r2))^2</span>
+MPCobj.Weights.OutputVariables={OW};
+<span class="comment">% Non-diagonal input weight, corresponding to (u1-u2)^2</span>
+MPCobj.Weights.ManipulatedVariables={0.5*OW};
+</pre><h2>Closed-Loop MPC Simulation Using the Command SIM<a name="8"></a></h2><pre class="codeinput">Tstop=30;               <span class="comment">% simulation time</span>
+
+Tf=round(Tstop/Ts);     <span class="comment">% number of simulation steps</span>
+r=ones(Tf,1)*[1 2];     <span class="comment">% reference trajectory</span>
+</pre><p>Run the closed-loop simulation and plot results.</p><pre class="codeinput">close <span class="string">all</span>
+[y,t,u]=sim(MPCobj,Tf,r);
+subplot(211)
+plot(t,y(:,1)-r(1,1)-y(:,2)+r(1,2));grid
+title(<span class="string">'(y_1-r_1)-(y_2-r_2)'</span>);
+subplot(212)
+plot(t,u);grid
+title(<span class="string">'u'</span>);
+</pre><pre class="codeoutput">--&gt;Integrated white noise added on measured output channel #1.
+--&gt;Integrated white noise added on measured output channel #2.
+--&gt;The "Model.Noise" property of the "mpc" object is empty. Assuming white noise on each measured output channel.
+</pre><img vspace="5" hspace="5" src="mpcweightsdemo_01.png" alt=""> <h2>MPC Simulation Using Simulink&reg;<a name="10"></a></h2><pre class="codeinput"><span class="keyword">if</span> ~mpcchecktoolboxinstalled(<span class="string">'simulink'</span>)
+    disp(<span class="string">'Simulink(R) is required to run this part of the demo.'</span>)
+    <span class="keyword">return</span>
+<span class="keyword">end</span>
+</pre><p>The continuous-time plant to be controlled has the following state-space realization:</p><pre class="codeinput">[A,B,C,D]=ssdata(sys);
+</pre><p>Now simulate closed-loop MPC in Simulink&reg;.</p><pre class="codeinput">open_system(<span class="string">'mpc_weightsdemo'</span>);
+sim(<span class="string">'mpc_weightsdemo'</span>,Tstop)
+</pre><img vspace="5" hspace="5" src="mpcweightsdemo_02.png" alt=""> <img vspace="5" hspace="5" src="mpcweightsdemo_03.png" alt=""> <img vspace="5" hspace="5" src="mpcweightsdemo_04.png" alt=""> <pre class="codeinput">bdclose(<span class="string">'mpc_weightsdemo'</span>);
+</pre><p class="footer">Copyright 1990-2009 The MathWorks, Inc.<br>
+          Published with MATLAB&reg; 7.10</p><p class="footer" id="trademarks">MATLAB and Simulink are registered trademarks of The MathWorks, Inc.  Please see <a href="http://www.mathworks.com/trademarks">www.mathworks.com/trademarks</a> for a list of other trademarks owned by The MathWorks, Inc.  Other product or brand names are trademarks or registered trademarks of their respective owners.</p></div><!--
+##### SOURCE BEGIN #####
+%% MPC with Non-Diagonal Weight Matrices
+
+%%
+% This demonstration shows how to use non-diagonal weight matrices.
+%
+% Copyright 1990-2009 The MathWorks, Inc.  
+% $Revision: 1.1.8.5 $ $Date: 2009/09/21 00:04:35 $
+
+%% MPC Controller Setup
+% We start defining the plant to be controlled.
+sys=ss(tf({1,1;1,2},{[1 .5 1],[.7 .5 1];[1 .4 2],[1 2]}),'min');
+
+%%
+% Now, setup an MPC controller object.
+Ts=.1;             % sampling time
+model=c2d(sys,Ts); % prediction model
+
+%%
+% Define prediction and control horizons.
+p=20;       % prediction horizon
+m=2;        % control horizon 
+
+%% 
+% Let us assume default value for weights and build the MPC object.
+MPCobj=mpc(model,Ts,p,m);
+
+%%
+% Define constraints on the manipulated variable.
+clear MV
+MV(1)=struct('Min',-3,'Max',3,'RateMin',-100,'RateMax',100);
+MV(2)=struct('Min',-2,'Max',2,'RateMin',-100,'RateMax',100);
+MPCobj.MV=MV;
+
+%%
+% Define non-diagonal output weight. Note that it is specified inside a
+% cell!
+OW=[1 -1]'*[1 -1]; 
+
+% Non-diagonal output weight, corresponding to ((y1-r1)-(y2-r2))^2
+MPCobj.Weights.OutputVariables={OW}; 
+% Non-diagonal input weight, corresponding to (u1-u2)^2
+MPCobj.Weights.ManipulatedVariables={0.5*OW};
+
+
+%% Closed-Loop MPC Simulation Using the Command SIM
+Tstop=30;               % simulation time
+
+Tf=round(Tstop/Ts);     % number of simulation steps
+r=ones(Tf,1)*[1 2];     % reference trajectory
+
+%%
+% Run the closed-loop simulation and plot results.
+close all
+[y,t,u]=sim(MPCobj,Tf,r);
+subplot(211)
+plot(t,y(:,1)-r(1,1)-y(:,2)+r(1,2));grid
+title('(y_1-r_1)-(y_2-r_2)');
+subplot(212)
+plot(t,u);grid
+title('u');
+
+%% MPC Simulation Using Simulink(R)
+if ~mpcchecktoolboxinstalled('simulink')
+    disp('Simulink(R) is required to run this part of the demo.')
+    return
+end
+
+%%
+% The continuous-time plant to be controlled has the following state-space
+% realization:
+[A,B,C,D]=ssdata(sys);
+
+%%
+% Now simulate closed-loop MPC in Simulink(R).
+open_system('mpc_weightsdemo');
+sim('mpc_weightsdemo',Tstop) 
+
+%%
+bdclose('mpc_weightsdemo');
+displayEndOfDemoMessage(mfilename)
+
+##### SOURCE END #####
+--></body></html>

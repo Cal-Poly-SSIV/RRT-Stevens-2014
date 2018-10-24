@@ -1,0 +1,135 @@
+<?xml version="1.0" encoding="shift_jis"?>
+<!-- Author(s): James Owen, Rong Chen -->
+<!-- $Revision: 1.4.2.17 $ -->
+<!-- $Date: 2009/05/23 08:03:22 $ -->
+<demos>
+  <name>Model Predictive Control</name>
+  <type>toolbox</type>
+  <icon>$toolbox/matlab/icons/matlabicon.gif</icon>
+  <description isCdata="no">
+<p>Model Predictive Control Toolbox(TM) provides MATLAB(R) functions, a graphical user interface (GUI), and Simulink(R) blocks for designing and simulating model predictive controllers in MATLAB and Simulink. These controllers optimize the performance of multi-input/multi-output systems that are subject to input and output constraints.</p>
+  </description> 
+
+    <demosection>
+      <label>Tutorial</label>
+      <demoitem>
+        <label>MPC Control of a Double Integrator</label>
+        <type>M-file</type>
+        <source>mpcdoubleint</source>  
+        <dependency>Simulink</dependency>
+      </demoitem>
+      <demoitem>
+        <label>MPC Control of a Multi-Input Single-Output System</label>
+        <type>M-file</type>
+        <source>mpcmiso</source>  
+        <dependency>Simulink</dependency>
+      </demoitem>
+      <demoitem>
+        <label>MPC Control of a Multi-Input Multi-Output Nonlinear System</label>
+        <type>M-file</type>
+        <source>mpcnonlinear</source>  
+        <dependency>Simulink</dependency>
+      </demoitem>
+      <demoitem>
+        <label>MPC for a Nonlinear Plant Under Nonzero Nominal Conditions</label>
+        <type>M-file</type>
+        <source>mpcoffsets</source>  
+        <dependency>Simulink</dependency>
+      </demoitem>
+      <demoitem>
+        <label>MPC Control with Anticipative Action (Look-Ahead)</label>
+        <type>M-file</type>
+        <source>mpcpreview</source>  
+        <dependency>Simulink</dependency>
+      </demoitem>
+      <demoitem>
+        <label>MPC Control with Input Targets</label>
+        <type>M-file</type>
+        <source>mpcutarget</source>  
+        <dependency>Simulink</dependency>
+      </demoitem>
+      <demoitem>
+        <label>MPC Bumpless Transfer</label>
+        <type>M-file</type>
+        <source>mpcbumpless</source>  
+        <dependency>Simulink</dependency>
+      </demoitem>
+      <demoitem>
+        <label>MPC with Variable Input and Output Bounds</label>
+        <type>M-file</type>
+        <source>mpcvarbounds</source>  
+        <dependency>Simulink</dependency>
+      </demoitem>
+      <demoitem>
+        <label>MPC with Non-Diagonal Weight Matrices</label>
+        <type>M-file</type>
+        <source>mpcweightsdemo</source>  
+        <dependency>Simulink</dependency>
+      </demoitem>
+      <demoitem>
+        <label>MPC Control of a MIMO System Under Plant Model Mismatch</label>
+        <type>M-file</type>
+        <source>simmismatch</source>  
+      </demoitem>
+      <demoitem>
+        <label>MPC Control Design Using a Linearized Plant Model</label>
+        <type>model</type>
+        <source>mpclinearization</source>
+        <file>html/mpclinearization.html</file>
+        <dependency>Simulink</dependency>
+      </demoitem>
+      <demoitem>
+        <label>Switching MPC Controllers with Multiple MPC Controllers Block</label>
+        <type>M-file</type>
+        <source>mpcswitching</source>
+        <dependency>Simulink</dependency>
+      </demoitem>
+      <demoitem>
+        <label>Sensitivity Analysis Based MPC Tuning</label>
+        <type>M-file</type>
+        <source>mpcsensitivity</source>
+      </demoitem>
+    </demosection>
+
+    <demosection>
+      <label>ケーススタディ</label>
+      <demoitem>
+        <label>MPC Control of a DC Servomotor</label>
+        <type>M-file</type>
+        <source>mpcmotor</source>  
+      </demoitem>
+      <demoitem>
+        <label>MPC Supervisory Control of a Two Stage Thermo-Mechanical Pulping Process</label>
+        <type>M-file</type>
+        <source>mpctmpdemo</source>  
+      </demoitem>
+      <demoitem>
+        <label>Constrained Multivariable (2x2) MPC Control of an AFTI-F16 Aircraft</label>
+        <type>M-file</type>
+        <source>afti16</source>  
+        <dependency>Simulink</dependency>
+      </demoitem>
+      <demoitem>
+        <label>MPC Control of a Chemical Reactor with Multiple Operating Conditions</label>
+        <type>M-file</type>
+        <source>mpccstr</source>
+        <dependency>Simulink</dependency>
+      </demoitem>
+    </demosection>
+
+    <demosection>
+      <label>On-line Implementation of MPC</label>
+      <demoitem>
+        <label>On-Line Implementation of MPC Using OPC Toolbox</label>
+        <type>M-file</type>
+        <source>mpcopcdemo</source>  
+      </demoitem>
+      <demoitem>
+        <label>MPC Code Generation with Real-Time Workshop</label>
+        <type>M-file</type>
+        <source>mpcrtwdemo</source>  
+        <dependency>Simulink</dependency>
+      </demoitem>
+    </demosection>
+
+</demos>

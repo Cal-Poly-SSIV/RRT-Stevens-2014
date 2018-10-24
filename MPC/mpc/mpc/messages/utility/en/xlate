@@ -1,0 +1,305 @@
+% Copyright 1999-2007 The MathWorks, Inc.
+% $Revision: 1.1.8.4 $  $Date: 2009/03/23 16:41:28 $
+
+<()InvalidHistoryTimeFormat
+>()Invalid time format. The value of the "History" property must be either a date number or a date string.  Type "help datenum" or "help datestr" for more information.
+
+<()InvalidControlHorizon
+>()Control horizon must be either a positive finite integer or a vector of positive finite integers.
+
+<()InvalidControlHorizonValue
+>()Control horizon requires all the entries no less than 1.
+
+<()InvalidNoiseModelInitialState
+>()You have specified an initial state for the measurement noise model that is not a state space model.  Use state space model instead.
+
+<()InvalidNoiseModelSampleTime
+>()No sample time provided for measurement noise model.
+
+<()InvalidNoiseModelD2D
+>()Cannot change sample time of measurement noise model. Error message: "%s".
+
+<()InvalidOptimizerInput
+>()The "Optimizer" property of an "mpc" object must be a structure with fields "MaxIter", "Trace", "Solver" and "MinOutputECR".
+
+<()InvalidOptimizerField
+>()The "Optimizer" property of an "mpc" object does not allow field "%s". Valid field names include "MaxIter", "Trace", "Solver" and "MinOutputECR".
+
+<()AmbiguousOptimizerField
+>()The "Optimizer" property of an "mpc" object has an ambiguous field. Supply more characters.
+
+<()InvalidOptimizerMaxIter
+>()The "Optimizer.MaxIter" property of an "mpc" object must be a positive integer.
+
+<()InvalidOptimizerTrace
+>()The "Optimizer.Trace" property of an "mpc" object must be a string of either "on" or "off".
+
+<()InvalidOptimizerSolver
+>()The "Optimizer.Solver" property of an "mpc" object must be string "ActiveSet".
+
+<()InvalidOptimizerECR
+>()The "Optimizer.MinOutputECR" property of an "mpc" object must be a positive scalar number.
+
+<()InvalidDistModel
+>()Disturbance model "%s" must be an LTI object with %d outputs.
+
+<()InvalidDistModelD2D
+>()Cannot change sample time of disturbance model "%s".
+
+<()InvalidPredictionHorizon
+>()Prediction horizon expects be a positive finite integer.
+
+<()InvalidSampleTime
+>()Sample time must be either a finite real positive number or empty.
+
+<()InvalidUMDModelInitialState
+>()You have specified an initial state for the unmeasured input disturbance model that is not a state space model.  Use state space model instead.
+
+<()InvalidUMDModel
+>()Unmeasured input disturbance model must have %d outputs.
+
+<()InvalidUMDModelSampleTime
+>()No sample time provided for the unmeasured input disturbance model.
+
+<()InvalidUMDModelD2D
+>()Cannot change sample time of the unmeasured input disturbance model. Error message: "%s".
+
+<()InvalidWeight
+>()The "Weights" property of an "mpc" object must be a structure with fields "ManipulatedVariables", "ManipulatedVariablesRate", "OutputVariables", "ECR".
+
+<()InvalidWeightField
+>()The "Weights" property of an "mpc" object does not allow field "%s". Valid field names include "ManipulatedVariables", "ManipulatedVariablesRate", "OutputVariables", "ECR".
+
+<()InvalidWeightValue
+>()Weight values must be non-negative finite real numbers.
+
+<()InvalidWeightDiagonal
+>()Non-diagonal weight matrix must be a %d-by-%d matrix contained in a single cell.
+
+<()InvalidWeightInfiniteNegative
+>()Weights in "%s" must be non-negative finite real numbers.
+
+<()InvalidWeightSizeColumn
+>()Weights in "%s" must have %d columns.
+
+<()InvalidWeightPSD
+>()Weight matrix must be positive semidefinite.
+
+<()InvalidWeightSizeFull
+>()Weights in "%s" must be a %d-by-%d matrix.
+
+<()Kalman1
+>()Problems encountered when designing the overall state observer (Kalman filter). %s
+
+<()Kalman2
+>()Plant model is not detectable from measured outputs.
+
+<()Kalman3
+>()Plant model was obtained using the command "ss", try using "ss" with option "min".  Example: "MPCobj.Model.Plant=ss(G,'min')".
+
+<()Kalman4
+>()The overall system is not detectable. Possible remedies are:
+
+<()Kalman5
+>()(1) change Model.Plant
+
+<()Kalman6
+>()(2) change Model.Disturbance. Type "help setindist" command for more information.
+
+<()Kalman7
+>()(3) change Model.Noise
+
+<()Kalman8
+>()(4) change output disturbance model. Type "help setoutdist" command for more information.
+
+<()Kalman9
+>()The overall system has unobservable modes in z=1.
+
+<()InvalidSpecType
+>()"%s" expects a %d-by-1 struct array.
+
+<()InvalidSpecStruct
+>()"%s" expects a struct.
+
+<()InvalidSpecLength
+>()Too many elements in structure "%s".  The length of the struct array should be <= %d.
+
+<()InvalidSpecStructField
+>()The field "%s" in structure "%s(%d)" is invalid.
+
+<()InvalidSpecName
+>()Signal names must be specified in the "Model.Plant.InputName" and "Model.Plant.OutputName" properties of an "mpc" object. Type "help setname" for more information.
+
+<()InvalidNameUnits
+>()Field "%s(%d).%s" must be a string.
+
+<()InvalidTarget
+>()Field "%s(%d).%s" must be real valued or string "%s".
+
+<()InvalidOtherField
+>()Field "%s(%d).%s" must be real valued.
+
+<()InvalidUYField
+>()Field "%s(%d).%s" must be a non-negative and finite value.
+
+<()InvalidMinMax
+>()Field "%s(%d).Min" must be smaller than field "%s(%d).Max".
+
+<()InvalidRateMinMax
+>()Field "%s(%d).RateMin" must be smaller than field "%s(%d).RateMax".
+
+<()DemoPMModelInvalidXp0
+>()Initial condition vector for plant states must have 4 elements.
+
+<()InvalidBlockSignalDimensionGeneral
+>()Incompatible port widths or dimensions.\n %s
+
+<()InvalidBlockSignalDimensionMO
+>()The MPC block requires the number of measured outputs to be %d, but the port width is %d.
+
+<()InvalidBlockSignalDimensionRef
+>()The MPC block requires the number of setpoint signals to be %d, but the port width is %d.
+
+<()InvalidBlockSignalDimensionMD
+>()The MPC block requires the number of measured disturbances to be %d, but the port width is %d.
+
+<()InvalidBlockSignalDimensionExtMV
+>()The MPC block requires the number of externally supplied manipulated variables to be %d, but the port width is %d.
+
+<()InvalidBlockSignalDimensionInputLowerBound
+>()The MPC block requires the number of input lower bounds to be %d, but the port width is %d.
+
+<()InvalidBlockSignalDimensionInputUpperBound
+>()The MPC block requires the number of input upper bounds to be %d, but the port width is %d.
+
+<()InvalidBlockSignalDimensionOutputLowerBound
+>()The MPC block requires the number of output lower bounds to be %d, but the port width is %d.
+
+<()InvalidBlockSignalDimensionOutputUpperBound
+>()The MPC block requires the number of output upper bounds to be %d, but the port width is %d.
+
+<()InvalidModelInputSignalType
+>()Invalid input signal type "%s". Valid signal types include "ManipulatedVariable", "MeasuredDisturbance", "UnmeasuredDisturbance".
+
+<()InvalidModelOutputSignalType
+>()Invalid output signal type "%s". Valid signal types include "MeasuredOutput" and "UnmeasuredOutput".
+
+<()IntersectMVMD
+>()Manipulated variables and measured disturbances must not have common indices.
+
+<()IntersectMVUMD
+>()Manipulated variables and unmeasured disturbances must not have common indices.
+
+<()IntersectMDUMD
+>()Measured disturbances and unmeasured disturbances must not have common indices.
+
+<()IntersectMOUMO
+>()Measured outputs and unmeasured outputs must not have common indices.
+
+<()NoSampleTimeForModel
+>()No sample time is provided for plant model.
+
+<()InvalidPlantModelD2D
+>()Cannot change sample time of plant model.  Error message: "%s".
+
+<()InvalidNominalStructure
+>()The "Model.Nominal" property of an "mpc" object must be a structure with fields "X", "Y", "U", "DX".
+
+<()InvalidNominalState
+>()State offset cannot be applied to a "%s" model.
+
+<()InvalidNominalStateUpdate
+>()State-update offset cannot be applied to a "%s" model.
+
+<()InvalidNominalStructureField
+>()Invalid field "%s". The "Model.Nominal" property of an "mpc" object must be a structure with fields "X", "Y", "U", "DX".
+
+<()InvalidNominalStructureData
+>()The "Model.Nominal.%s" property of an "mpc" object must be a %d-by-1 array with finite real values.
+
+<()InvalidRefPreviewSignal
+>()Invalid reference signal "%s" in base workspace.
+
+<()InvalidMDPreviewSignal
+>()Invalid measured disturbance signal "%s" in base workspace.
+
+<()Invalidx0u1Data
+>()%s must a real valued vector.
+
+<()Invalidx0u1Length
+>()%s must be a vector of length %d.
+
+<()InitialStateNoiseModel
+>()Initial state of noise model
+
+<()InitialStateUnmeasuredDisturbanceModel
+>()Initial state of unmeasured input disturbance model
+
+<()InitialStatePlantModel
+>()Initial state of plant model
+
+<()InitialInput
+>()Initial Input
+
+<()LastMoveField
+>()LastMove
+
+<()InvalidModelField
+>()Invalid field "%s". The "Model" property of an "mpc" object must be a structure with fields: "Plant", "Nominal", "Disturbance" and "Noise".
+
+<()ModelIsNotLTI
+>()The "Model.Plant" property of an "mpc" object must be an "lti" object.
+
+<()ModelIsArray
+>()The "Model.Plant" property of an "mpc" object does not allow an arrays of "lti" objects.
+
+<()ModelIsComplex
+>()The "Model.Plant" property of an "mpc" object does not allow an "lti" object with complex coefficients.
+
+<()ModelIsContinuous
+>()You must specify a sample time when the "Model.Plant" property of an "mpc" object is continuous-time.
+
+<()ModelHasNoMV
+>()The "Model.Plant" property of an "mpc" object must have at least one manipulated variable.
+
+<()ModelHasNonZeroOffsetOnUMD
+>()Nonzero offsets on unmeasured disturbance inputs are not allowed. Treat such offsets as extra measured disturbances.
+
+<()ModelHasDirectFeedthrough
+>()Direct feedthrough from manipulated variables to any output is not allowed.
+
+<()MDModelIsNotLTI
+>()The "Model.Disturbance" property of an "mpc" object must be either an "lti" or a "idmodel" object.
+
+<()MDModelIsArray
+>()The "Model.Disturbance" property of an "mpc" object does not allow an arrays of "lti" objects.
+
+<()MDModelIsComplex
+>()The "Model.Disturbance" property of an "mpc" object does not allow an "lti" object with complex coefficients.
+
+<()MDModelWrongSize
+>()Unmeasured input disturbance model must have %d outputs.
+
+<()NoiseModelIsNotLTI
+>()The "Model.Noise" property of an "mpc" object must be either an "lti" or a "idmodel" object.
+
+<()NoiseModelIsArray
+>()The "Model.Noise" property of an "mpc" object does not allow an arrays of "lti" objects.
+
+<()NoiseModelIsComplex
+>()The "Model.Noise" property of an "mpc" object does not allow an "lti" object with complex coefficients.
+
+<()NoiseModelWrongSize
+>()Measurement noise model must have %d outputs that equals the number of measured outputs.
+
+<()MDModelNames
+>()The output signal names of the unmeasured input disturbance model be specified in the "Model.Plant.InputName" property of an "mpc" object.
+
+<()InvalidDimension
+>()Dimensions of %s of MPC objects %s and %s are not consistent
+
+<()InvalidPort
+>()Error in port widths or dimensions. The Multiple MPC object specifies that the number of %s is %d, however %d are connected\n
+
+<()InvalidStartTime
+>()Simulation start time has to be a scalar non-negative number or such a variable existing in model workspace or base workspace. 

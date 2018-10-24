@@ -1,0 +1,27 @@
+% Copyright 1999-2007 The MathWorks, Inc.
+% $Revision: 1.1.8.1 $  $Date: 2007/11/09 20:41:04 $
+
+<()InvalidModelType
+>()The second input argument of the "%s" command must be a string of either "sys" or "mat".
+
+<()InvalidEstimOption
+>()The second input argument of the "%s" command accepts string "default" to restore the default Kalman gain.
+
+<()InvalidEstimGain
+>()The second input argument of the "%s" command accepts a matrix with real finite values as the observer gain.
+
+<()InvalidEstimGainSize
+>()The second input argument of the "%s" command accepts a matrix with dimension %d-by-%d as the observer gain.
+
+<()InvalidIndistOption
+>()The second input argument of the "%s" command must be a string of either "integrators" or "model".
+
+<()InvalidOutdistOption
+>()The second input argument of the "%s" command must be one of the following strings: "integrators", "model" or "remove".
+
+<()OutdistIndexOutOfBoundary
+>()The third input argument of the "%s" command must be between 1 and %d. 
+
+<()Unstable
+>()Unstable state estimator!
+

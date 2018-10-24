@@ -1,0 +1,18 @@
+% Copyright 1999-2007 The MathWorks, Inc.
+% $Revision: 1.1.8.1 $  $Date: 2007/11/09 20:41:06 $
+
+<()InvalidMPCObject
+>()The first input argument of the "%s" command must be a "mpc" object.
+
+<()Invalid2ndMPCObject
+>()The second input argument of the "%s" command must be a "mpc" object.
+
+<()EmptyMPCObject
+>()The "%s" command requires a non-empty "mpc" object.
+
+<()InvalidPropertyName
+>()Property name(s) must be a string or a cell vector of strings.
+
+<()FileNotFound
+>()File "%s" not found on MATLAB path.
+

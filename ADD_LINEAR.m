@@ -1,0 +1,34 @@
+function TEMP_NODE= ADD_LINEAR(NODE_DIST, TREE, NODES, GOAL)
+
+
+
+CLOSE_NODE=TREE(NODES,1:2);        %SETS NODE JUST ADDED TO THE CLOSEST NODE
+                                   %TO TEST A STRAIGHT PATH FROM IT 
+                                   
+%DETERMINES THE DISTANCE TO THE GOAL                                  
+GOAL_DIST=((GOAL(1)-CLOSE_NODE(1))^2+(GOAL(2)-CLOSE_NODE(2))^2)^.5;  
+        
+%CHECK TO SEE IF THE GOAL HAS BEEN REACHED BY COMPARING
+%THE DISTANCE TO THE GOAL TO THE NODE DISTANCE
+if (GOAL_DIST<=NODE_DIST)
+    
+    TEMP_NODE(1:2)=GOAL;
+    TEMP_NODE(3)=NODES;
+    
+    
+            %TREE((NODES+1), 1:2)=GOAL;
+            %TREE((NODES+1),3)=NODES;
+            %DONE=1;
+            %NODES=NODES+1;
+            
+else  
+        
+    %LOCATION OF TEMPORARY NODE IN THE DIRECTION OF THE GOAL
+    TEMP_NODE(1)=CLOSE_NODE(1)+ NODE_DIST*(GOAL(1)-CLOSE_NODE(1))/GOAL_DIST;   %X
+    TEMP_NODE(2)=CLOSE_NODE(2)+ NODE_DIST*(GOAL(2)-CLOSE_NODE(2))/GOAL_DIST;   %Y
+    TEMP_NODE(3)=NODES;
+
+end
+
+
+end

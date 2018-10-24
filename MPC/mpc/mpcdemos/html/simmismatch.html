@@ -1,0 +1,106 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   <!--
+This HTML is auto-generated from an M-file.
+To make changes, update the M-file and republish this document.
+      --><title>MPC Control of a MIMO System Under Plant Model Mismatch</title><meta name="generator" content="MATLAB 7.10"><meta name="date" content="2010-01-05"><meta name="m-file" content="simmismatch"><link rel="stylesheet" type="text/css" href="../../../matlab/demos/private/style.css"></head><body><div class="header"><div class="left"><a href="matlab:edit simmismatch">Open simmismatch.m in the Editor</a></div><div class="right"><a href="matlab:echodemo simmismatch">Run in the Command Window</a></div></div><div class="content"><h1>MPC Control of a MIMO System Under Plant Model Mismatch</h1><!--introduction--><!--/introduction--><h2>Contents</h2><div><ul><li><a href="#2">Plant Model and MPC Controller Setup</a></li><li><a href="#10">Simulation Using SIM Command</a></li></ul></div><p>This demonstration shows how to test an MPC controller under a mismatch between the nominal model which the controller is based on and the actual plant which is controlled by MPC. The nominal system has 2 manipulated variables, 2 unmeasured input disturbances, and 2 measured outputs. The actual plant has 3 unmeasured input disturbances and a different dynamics.</p><h2>Plant Model and MPC Controller Setup<a name="2"></a></h2><p>Define the parameters of the nominal plant which the MPC controller is based on.</p><pre class="codeinput">p1 = tf(1,[1 2 1])*[1 1; 0 1];
+plant = ss([p1 p1],<span class="string">'min'</span>);
+</pre><p>Define inputs 1 and 2 as manipulated variables, 3 and 4 as unmeasured disturbances.</p><pre class="codeinput">plant=setmpcsignals(plant,<span class="string">'MV'</span>,[1 2],<span class="string">'UD'</span>,[3 4]);
+</pre><p>Also define input names.</p><pre class="codeinput">set(plant,<span class="string">'InputName'</span>,{<span class="string">'mv1'</span>,<span class="string">'mv2'</span>,<span class="string">'umd3'</span>,<span class="string">'umd4'</span>});
+</pre><p>For unmeasured input disturbances, the MPC controller will use the following model.</p><pre class="codeinput">distModel = eye(2,2)*ss(-.5,1,1,0);
+</pre><p>We are ready to create the MPC object.</p><pre class="codeinput">mpcobj = mpc(plant,1,40,2);
+mpcobj.Model.Disturbance = distModel;
+</pre><pre class="codeoutput">--&gt;The "Weights.ManipulatedVariables" property of "mpc" object is empty. Assuming default 0.00000.
+--&gt;The "Weights.ManipulatedVariablesRate" property of "mpc" object is empty. Assuming default 0.10000.
+--&gt;The "Weights.OutputVariables" property of "mpc" object is empty. Assuming default 1.00000.
+</pre><p>Define the parameters of the actual plant in closed loop with the MPC controller. Note that the actual plant has three unmeasured disturbances, while the nominal one has two.</p><pre class="codeinput">p2 = tf(1.5,[0.1 1 2 1])*[1 1; 0 1];
+psim = ss([p2 p2 tf(1,[1 1])*[0;1]],<span class="string">'min'</span>);
+psim=setmpcsignals(psim,<span class="string">'MV'</span>,[1 2],<span class="string">'UD'</span>,[3 4 5]);
+</pre><p>Define reference trajectories and unmeasured disturbances entering the actual plant.</p><pre class="codeinput">dist=ones(1,3); <span class="comment">% unmeasured disturbance trajectory</span>
+refs=[1 2];     <span class="comment">% output reference trajectory</span>
+
+Tf=100;         <span class="comment">% total number of simulation steps</span>
+</pre><p>Create an MPC simulation object.</p><pre class="codeinput">options=mpcsimopt(mpcobj);
+options.unmeas=dist;
+options.model=psim;
+</pre><h2>Simulation Using SIM Command<a name="10"></a></h2><p>Run the closed-loop MPC simulation with model mismatch and unforeseen unmeasured disturbance inputs.</p><pre class="codeinput">sim(mpcobj,Tf,refs,options);
+</pre><pre class="codeoutput">--&gt;Converting model to discrete time.
+--&gt;Integrated white noise added on measured output channel #1.
+--&gt;Integrated white noise added on measured output channel #2.
+--&gt;The "Model.Noise" property of the "mpc" object is empty. Assuming white noise on each measured output channel.
+</pre><img vspace="5" hspace="5" src="simmismatch_01.png" alt=""> <img vspace="5" hspace="5" src="simmismatch_02.png" alt=""> <p class="footer">Copyright 1990-2009 The MathWorks, Inc.<br>
+          Published with MATLAB&reg; 7.10</p><p class="footer" id="trademarks">MATLAB and Simulink are registered trademarks of The MathWorks, Inc.  Please see <a href="http://www.mathworks.com/trademarks">www.mathworks.com/trademarks</a> for a list of other trademarks owned by The MathWorks, Inc.  Other product or brand names are trademarks or registered trademarks of their respective owners.</p></div><!--
+##### SOURCE BEGIN #####
+%% MPC Control of a MIMO System Under Plant Model Mismatch
+
+%%
+% This demonstration shows how to test an MPC controller under a mismatch
+% between the nominal model which the controller is based on and the actual
+% plant which is controlled by MPC. The nominal system has 2 manipulated 
+% variables, 2 unmeasured input disturbances, and 2 measured outputs. The
+% actual plant has 3 unmeasured input disturbances and a different
+% dynamics. 
+%
+% Copyright 1990-2009 The MathWorks, Inc.
+% $Revision: 1.1.8.10 $  $Date: 2009/09/21 00:04:36 $   
+
+%% Plant Model and MPC Controller Setup
+% Define the parameters of the nominal plant which the MPC controller is
+% based on.
+p1 = tf(1,[1 2 1])*[1 1; 0 1];
+plant = ss([p1 p1],'min');
+
+%%
+% Define inputs 1 and 2 as manipulated variables, 3 and 4 as unmeasured
+% disturbances.
+plant=setmpcsignals(plant,'MV',[1 2],'UD',[3 4]);
+
+%%
+% Also define input names.
+set(plant,'InputName',{'mv1','mv2','umd3','umd4'});
+
+%%
+% For unmeasured input disturbances, the MPC controller will use the 
+% following model.
+distModel = eye(2,2)*ss(-.5,1,1,0);
+
+%%
+% We are ready to create the MPC object.
+mpcobj = mpc(plant,1,40,2);
+mpcobj.Model.Disturbance = distModel;
+
+%% 
+% Define the parameters of the actual plant in closed loop with the 
+% MPC controller. Note that the actual plant has three unmeasured
+% disturbances, while the nominal one has two.
+p2 = tf(1.5,[0.1 1 2 1])*[1 1; 0 1];
+psim = ss([p2 p2 tf(1,[1 1])*[0;1]],'min');
+psim=setmpcsignals(psim,'MV',[1 2],'UD',[3 4 5]);
+
+%%
+% Define reference trajectories and unmeasured disturbances entering the
+% actual plant.
+dist=ones(1,3); % unmeasured disturbance trajectory
+refs=[1 2];     % output reference trajectory
+
+Tf=100;         % total number of simulation steps
+
+%%
+% Create an MPC simulation object.
+options=mpcsimopt(mpcobj);
+options.unmeas=dist;
+options.model=psim;
+
+%% Simulation Using SIM Command
+% Run the closed-loop MPC simulation with model mismatch and 
+% unforeseen unmeasured disturbance inputs.
+sim(mpcobj,Tf,refs,options);
+
+%%
+displayEndOfDemoMessage(mfilename)
+
+##### SOURCE END #####
+--></body></html>

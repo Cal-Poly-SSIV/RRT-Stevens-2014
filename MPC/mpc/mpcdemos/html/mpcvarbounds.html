@@ -1,0 +1,112 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   <!--
+This HTML is auto-generated from an M-file.
+To make changes, update the M-file and republish this document.
+      --><title>MPC with Variable Input and Output Bounds</title><meta name="generator" content="MATLAB 7.10"><meta name="date" content="2010-01-05"><meta name="m-file" content="mpcvarbounds"><link rel="stylesheet" type="text/css" href="../../../matlab/demos/private/style.css"></head><body><div class="header"><div class="left"><a href="matlab:edit mpcvarbounds">Open mpcvarbounds.m in the Editor</a></div><div class="right"><a href="matlab:echodemo mpcvarbounds">Run in the Command Window</a></div></div><div class="content"><h1>MPC with Variable Input and Output Bounds</h1><!--introduction--><!--/introduction--><h2>Contents</h2><div><ul><li><a href="#2">MPC Controller Setup</a></li><li><a href="#8">Simulation Setup</a></li></ul></div><p>This demonstration shows how to vary input and output saturation limits in real-time using Model Predictive Control Toolbox&#8482;.</p><p>Note: Possible limits specified in the MPC object are overridden by limit values fed to the MPC block (if left unconnected, the corresponding limit is considered unbounded).</p><h2>MPC Controller Setup<a name="2"></a></h2><pre class="codeinput"><span class="keyword">if</span> ~mpcchecktoolboxinstalled(<span class="string">'simulink'</span>)
+    disp(<span class="string">'Simulink(R) is required to run this demo.'</span>)
+    <span class="keyword">return</span>
+<span class="keyword">end</span>
+</pre><p>Plant to be controlled and model used by MPC.</p><pre class="codeinput">plant=tf(1,[1 .8 3]);
+</pre><p>Define prediction and control horizons, sampling time, weights, input bounds.</p><pre class="codeinput">p=10;       <span class="comment">% prediction horizon (take default one)</span>
+m=4;        <span class="comment">% control horizon</span>
+Ts=.1;      <span class="comment">% controller's sampling time</span>
+</pre><p>Set weights.</p><pre class="codeinput">clear <span class="string">weights</span>
+weights.input=0;
+weights.output=1;
+weights.inputrate=0.5;
+</pre><p>Set constraints.</p><pre class="codeinput">clear <span class="string">mvconstraints</span>
+mvconstraints.RateMin = -10;
+mvconstraints.RateMax = inf;
+</pre><p>Create mpc object.</p><pre class="codeinput">mpc1=mpc(plant,Ts,p,m,weights,mvconstraints);
+</pre><h2>Simulation Setup<a name="8"></a></h2><p>Set output set-point.</p><pre class="codeinput">ref=1;
+<span class="comment">% Set simulation time.</span>
+Tsim=20;
+<span class="comment">% Open Simulink(R) Model.</span>
+open_system(<span class="string">'mpc_varbounds'</span>);
+<span class="comment">% Turn off input/output not connected warnings since they are irrelevant.</span>
+set_param(<span class="string">'mpc_varbounds'</span>,<span class="string">'UnconnectedInputMsg'</span>,<span class="string">'off'</span>)
+set_param(<span class="string">'mpc_varbounds'</span>,<span class="string">'UnconnectedOutputMsg'</span>,<span class="string">'off'</span>)
+<span class="comment">% Start Simulation.</span>
+sim(<span class="string">'mpc_varbounds'</span>);
+</pre><pre class="codeoutput">--&gt;Converting the "Model.Plant" property of "mpc" object to state-space.
+--&gt;Converting model to discrete time.
+--&gt;Integrated white noise added on measured output channel #1.
+--&gt;The "Model.Noise" property of the "mpc" object is empty. Assuming white noise on each measured output channel.
+--&gt;Converting the "Model.Plant" property of "mpc" object to state-space.
+--&gt;Converting model to discrete time.
+--&gt;Integrated white noise added on measured output channel #1.
+--&gt;The "Model.Noise" property of the "mpc" object is empty. Assuming white noise on each measured output channel.
+</pre><img vspace="5" hspace="5" src="mpcvarbounds_01.png" alt=""> <img vspace="5" hspace="5" src="mpcvarbounds_02.png" alt=""> <pre class="codeinput">bdclose(<span class="string">'mpc_varbounds'</span>);
+</pre><p class="footer">Copyright 1990-2009 The MathWorks, Inc.<br>
+          Published with MATLAB&reg; 7.10</p><p class="footer" id="trademarks">MATLAB and Simulink are registered trademarks of The MathWorks, Inc.  Please see <a href="http://www.mathworks.com/trademarks">www.mathworks.com/trademarks</a> for a list of other trademarks owned by The MathWorks, Inc.  Other product or brand names are trademarks or registered trademarks of their respective owners.</p></div><!--
+##### SOURCE BEGIN #####
+%% MPC with Variable Input and Output Bounds
+
+%%
+% This demonstration shows how to vary input and output saturation limits in
+% real-time using Model Predictive Control Toolbox(TM).
+%
+% Note: Possible limits specified in the MPC object are overridden by limit
+% values fed to the MPC block (if left unconnected, the corresponding limit
+% is considered unbounded). 
+%
+% Copyright 1990-2009 The MathWorks, Inc.  
+% $Revision: 1.1.8.5 $ $Date: 2009/09/21 00:04:34 $
+
+%% MPC Controller Setup
+if ~mpcchecktoolboxinstalled('simulink')
+    disp('Simulink(R) is required to run this demo.')
+    return
+end
+
+%%
+% Plant to be controlled and model used by MPC.
+plant=tf(1,[1 .8 3]);
+
+%%
+% Define prediction and control horizons, sampling time, weights, input
+% bounds.
+p=10;       % prediction horizon (take default one)
+m=4;        % control horizon 
+Ts=.1;      % controller's sampling time
+
+%%
+% Set weights.
+clear weights
+weights.input=0;
+weights.output=1;
+weights.inputrate=0.5;
+
+%%
+% Set constraints.
+clear mvconstraints
+mvconstraints.RateMin = -10;
+mvconstraints.RateMax = inf;
+
+%%
+% Create mpc object.
+mpc1=mpc(plant,Ts,p,m,weights,mvconstraints);
+
+%% Simulation Setup
+% Set output set-point.
+ref=1; 
+% Set simulation time.
+Tsim=20;   
+% Open Simulink(R) Model.
+open_system('mpc_varbounds');
+% Turn off input/output not connected warnings since they are irrelevant.
+set_param('mpc_varbounds','UnconnectedInputMsg','off')
+set_param('mpc_varbounds','UnconnectedOutputMsg','off')
+% Start Simulation.
+sim('mpc_varbounds');
+
+%%
+bdclose('mpc_varbounds');
+displayEndOfDemoMessage(mfilename)
+
+##### SOURCE END #####
+--></body></html>

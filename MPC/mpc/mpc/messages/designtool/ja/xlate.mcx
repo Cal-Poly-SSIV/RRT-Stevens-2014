@@ -1,0 +1,655 @@
+<()Invalid Simulink model.  It must be either the name or the handle of an open Simulink model.
+>()*JA*Invalid Simulink model.  It must be either the name or the handle of an open Simulink model.
+
+<()Simulink model "%s" is not open.
+>()*JA*Simulink model "%s" is not open.
+
+<()MPC Design Tool
+>()*JA*MPC Design Tool
+
+<()Loading MPC Design Tool...
+>()*JA*Loading MPC Design Tool...
+
+<()Creating the GUI...
+>()*JA*Creating the GUI...
+
+<()Creating an MPC task...
+>()*JA*Creating an MPC task...
+
+<()Attach the project to the GUI...
+>()*JA*Attach the project to the GUI...
+
+<()MPC Design Tool is ready.
+>()*JA*MPC Design Tool is ready.
+
+<()Specify number of Manipulated Variables (MVs):
+>()*JA*Specify number of Manipulated Variables (MVs):
+
+<()Invalid entry.  the number of MVs must be a positive scalar integer.
+>()*JA*Invalid entry.  the number of MVs must be a positive scalar integer.
+
+<()MPC Error
+>()*JA*MPC Error
+
+<()MPC Warning
+>()*JA*MPC Warning
+
+<()MPC Information
+>()*JA*MPC Information
+
+<()MPC Question 
+>()*JA*MPC Question 
+
+<()MPC Help
+>()*JA*MPC Help
+
+<()No MPC block is found in the Simulink model.
+>()*JA*No MPC block is found in the Simulink model.
+
+<()The MPC Block "%s" refers to an invalid MPC object.
+>()*JA*The MPC Block "%s" refers to an invalid MPC object.
+
+<()The MPC Block "%s" refers to an empty MPC object.
+>()*JA*The MPC Block "%s" refers to an empty MPC object.
+
+<()You have connected a signal to the "Measured Disturbance (md)" inport of the MPC block "%s", but the MPC model referred in this block does not have measured disturbance inputs.
+>()*JA*You have connected a signal to the "Measured Disturbance (md)" inport of the MPC block "%s", but the MPC model referred in this block does not have measured disturbance inputs.
+
+<()The MPC Block "%s" refers to an invalid "mpcdata.mpcstate" object for the initial controller state. Type "help mpcstate" for more information.
+>()*JA*The MPC Block "%s" refers to an invalid "mpcdata.mpcstate" object for the initial controller state. Type "help mpcstate" for more information.
+
+<()Cannot linearize when either "mv", "md', or "mo" ports are not connected.
+>()*JA*Cannot linearize when either "mv", "md', or "mo" ports are not connected.
+
+<()Failed to load project file "%s"
+>()*JA*Failed to load project file "%s"
+
+<()Specified MPC object "%s" cannot be found in base workspace.
+>()*JA*Specified MPC object "%s" cannot be found in base workspace.
+
+<()MPC task not found in the MPC Design Tool.
+>()*JA*MPC task not found in the MPC Design Tool.
+
+<()Choose an MPC design task to work on:
+>()*JA*Choose an MPC design task to work on:
+
+<()Cannot find MPC controller "%s" in file "%s".
+>()*JA*Cannot find MPC controller "%s" in file "%s".
+
+<()An MPC design task already exists for the MPC block "%s".
+>()*JA*An MPC design task already exists for the MPC block "%s".
+
+<()Java Swing not enabled.  It must be enabled to use the MPC Design Tool.
+>()*JA*Java Swing not enabled.  It must be enabled to use the MPC Design Tool.
+
+<()Opening the MPC Design Tool without specifying a workspace MPC object requires Simulink Control Design software to linearize the plant model.
+>()*JA*Opening the MPC Design Tool without specifying a workspace MPC object requires Simulink Control Design software to linearize the plant model.
+
+<()Linearization of the MPC model failed:
+>()*JA*Linearization of the MPC model failed:
+
+<()The specified MPC object "%s" cannot be modified in the design tool.
+>()*JA*The specified MPC object "%s" cannot be modified in the design tool.
+
+<()The specified MPC object "%s" is not defined in the workspace. Do you want to design a new one with that name?
+>()*JA*The specified MPC object "%s" is not defined in the workspace. Do you want to design a new one with that name?
+
+<()Opening MPC object in the MPC Design Tool failed:
+>()*JA*Opening MPC object in the MPC Design Tool failed:
+
+<()Failed to create a MPC Task.
+>()*JA*Failed to create a MPC Task.
+
+<()Cannot trim...
+>()*JA*Cannot trim...
+
+<()Cannot set up linearization since there is no operating condition constraint task.
+>()*JA*Cannot set up linearization since there is no operating condition constraint task.
+
+<()findop failed to find an operating condition.
+>()*JA*findop failed to find an operating condition.
+
+<()Cannot linearize...
+>()*JA*Cannot linearize...
+
+<()Could not linearize. You may consider first obtaining a linear model from a Linearization task and then using it in MPC design.
+>()*JA*Could not linearize. You may consider first obtaining a linear model from a Linearization task and then using it in MPC design.
+
+<()Temporarily converting the "mv" outport into "active" and "open loop" linearization input point in order to linearize the plant model.
+>()*JA*Temporarily converting the "mv" outport into "active" and "open loop" linearization input point in order to linearize the plant model.
+
+<()No linearization input point has been defined at the "mv" outport in the model. A temporary one will be added to perform the linearization.
+>()*JA*No linearization input point has been defined at the "mv" outport in the model. A temporary one will be added to perform the linearization.
+
+<()Temporarily converting the "mo" inport into "active" and "open loop" linearization output point in order to linearize the plant model.
+>()*JA*Temporarily converting the "mo" inport into "active" and "open loop" linearization output point in order to linearize the plant model.
+
+<()No linearization output point has been defined at the "mo" inport in the model. A temporary one will be added to perform the linearization.
+>()*JA*No linearization output point has been defined at the "mo" inport in the model. A temporary one will be added to perform the linearization.
+
+<()Too many linearization output points at the "mo" inport.  Only one is expected.
+>()*JA*Too many linearization output points at the "mo" inport.  Only one is expected.
+
+<()Additional linearization input/output points which are not associated with the "mo", "md" or "mv" ports have been ignored when performing the linearization.
+>()*JA*Additional linearization input/output points which are not associated with the "mo", "md" or "mv" ports have been ignored when performing the linearization.
+
+<()Temporarily converting the "md" inport into "active" and "open loop" linearization input point in order to linearize the plant model.
+>()*JA*Temporarily converting the "md" inport into "active" and "open loop" linearization input point in order to linearize the plant model.
+
+<()No linearization input point has been defined at the "md" inport in the model. A temporary one will be added to perform the linearization.
+>()*JA*No linearization input point has been defined at the "md" inport in the model. A temporary one will be added to perform the linearization.
+
+<()Too many linearization input points at the "md" inport.  Only one is expected.
+>()*JA*Too many linearization input points at the "md" inport.  Only one is expected.
+
+<()The MPC block "%s" is using the MPC controller "%s". Do you want to export it to the workspace so that this block continues to reflect the most recent changes made in the MPC Design Tool?
+>()*JA*The MPC block "%s" is using the MPC controller "%s". Do you want to export it to the workspace so that this block continues to reflect the most recent changes made in the MPC Design Tool?
+
+<()Invalid "%s" signal. It must be a vector of dimension %d.
+>()*JA*Invalid "%s" signal. It must be a vector of dimension %d.
+
+<()Invalid "%s" signal. It must be real valued.
+>()*JA*Invalid "%s" signal. It must be real valued.
+
+<()Invalid "%s" signal. It must have a field "time". (See "To Workspace" block)
+>()*JA*Invalid "%s" signal. It must have a field "time". (See "To Workspace" block)
+
+<()Invalid "%s" signal. Field "time" must be real valued.
+>()*JA*Invalid "%s" signal. Field "time" must be real valued.
+
+<()Invalid "%s" signal. It must have a field "signals". (See "To Workspace" block)
+>()*JA*Invalid "%s" signal. It must have a field "signals". (See "To Workspace" block)
+
+<()Invalid "%s" signal. Field "signals" must have a subfield "values". (See "To Workspace" block)
+>()*JA*Invalid "%s" signal. Field "signals" must have a subfield "values". (See "To Workspace" block)
+
+<()Invalid "%s" signal. Field "signals.values" must be real valued.
+>()*JA*Invalid "%s" signal. Field "signals.values" must be real valued.
+
+<()Invalid "%s" signal. The expected signal dimension is %d.
+>()*JA*Invalid "%s" signal. The expected signal dimension is %d.
+
+<()Prediction model in "%s" has direct feedthrough for at least one manipulated variable. MPC calculation aborted.
+>()*JA*Prediction model in "%s" has direct feedthrough for at least one manipulated variable. MPC calculation aborted.
+
+<()MPC controller could not be created for "%s". Simulations using "%s" will not run. Error message: %s
+>()*JA*MPC controller could not be created for "%s". Simulations using "%s" will not run. Error message: %s
+
+<()You have specified "%s" to model "%s", but "%s" is an invalid MATLAB expression or does not refer to a LTI object defined in MATLAB workspace.
+>()*JA*You have specified "%s" to model "%s", but "%s" is an invalid MATLAB expression or does not refer to a LTI object defined in MATLAB workspace.
+
+<()Chosen model "%s" has %i outputs but %i is expected.
+>()*JA*Chosen model "%s" has %i outputs but %i is expected.
+
+<()Bad entry on estimation tab "%s" of controller "%s".
+>()*JA*Bad entry on estimation tab "%s" of controller "%s".
+
+<()"Interval" must be a positive finite real number.
+>()*JA*"Interval" must be a positive finite real number.
+
+<()"Horizon" must be a positive finite integer.
+>()*JA*"Horizon" must be a positive finite integer.
+
+<()"Custom move allocation" must be an integer or a row vector of integers.
+>()*JA*"Custom move allocation" must be an integer or a row vector of integers.
+
+<()Scalar or vector is expected.
+>()*JA*Scalar or vector is expected.
+
+<()Non-negative scalar or vector is expected.
+>()*JA*Non-negative scalar or vector is expected.
+
+<()A non-negative finite scalar weight is expected.
+>()*JA*A non-negative finite scalar weight is expected.
+
+<()Disturbance to unmeasured output must be white.
+>()*JA*Disturbance to unmeasured output must be white.
+
+<()Name "%s" is already in use. Reverting to "%s".
+>()*JA*Name "%s" is already in use. Reverting to "%s".
+
+<()Unexpected integrator on unmeasured output %i
+>()*JA*Unexpected integrator on unmeasured output %i
+
+<()Controllers designed or imported previously use %i plant input(s) and %i plant output(s).
+>()*JA*Controllers designed or imported previously use %i plant input(s) and %i plant output(s).
+
+<()Controller to be imported "%s" is designed for %i plant input(s) and %i plant output(s).
+>()*JA*Controller to be imported "%s" is designed for %i plant input(s) and %i plant output(s).
+
+<()Import of controller "%s" aborted.
+>()*JA*Import of controller "%s" aborted.
+
+<()Name "%s" is already in use.  Choose another one.
+>()*JA*Name "%s" is already in use.  Choose another one.
+
+<()You cannot delete your only controller.
+>()*JA*You cannot delete your only controller.
+
+<()If you wish to clear it and start over, first create a new controller, then delete this one.
+>()*JA*If you wish to clear it and start over, first create a new controller, then delete this one.
+
+<()Do you really want to delete controller "%s"?
+>()*JA*Do you really want to delete controller "%s"?
+
+<()Controller "%s" was being used in at least one simulation scenario.
+>()*JA*Controller "%s" was being used in at least one simulation scenario.
+
+<()All references to controller "%s" have been replaced by "%s".
+>()*JA*All references to controller "%s" have been replaced by "%s".
+
+<()Name the new controller:
+>()*JA*Name the new controller:
+
+<()Click the "Display" button to see controller details.
+>()*JA*Click the "Display" button to see controller details.
+
+<()NOTE:  controller object will be recalculated.
+>()*JA*NOTE:  controller object will be recalculated.
+
+<()"Nominal" value must be a scalar, finite number.
+>()*JA*"Nominal" value must be a scalar, finite number.
+
+<()One or both of the input/output signal tables are empty. Consequently the operating condition cannot be derived from this source.
+>()*JA*One or both of the input/output signal tables are empty. Consequently the operating condition cannot be derived from this source.
+
+<()Mismatch between the width of the "Measured Outputs" in operating condition constraint and the number of "Measured Outputs" in the output signal table.
+>()*JA*Mismatch between the width of the "Measured Outputs" in operating condition constraint and the number of "Measured Outputs" in the output signal table.
+
+<()Mismatch between the width of the "Manipulated Variables" in operating condition constraint and the number of "Manipulated Variables" in the input signal table. 
+>()*JA*Mismatch between the width of the "Manipulated Variables" in operating condition constraint and the number of "Manipulated Variables" in the input signal table. 
+
+<()Mismatch between the width of the "Measured Disturbance Variables" in operating condition constraint and the number of "Measured Disturbance Variables" in the input signal table. 
+>()*JA*Mismatch between the width of the "Measured Disturbance Variables" in operating condition constraint and the number of "Measured Disturbance Variables" in the input signal table. 
+
+<()The MPC input and output signal tables must have at least one "Manipulated Variable" and "Measured Output" respectively.
+>()*JA*The MPC input and output signal tables must have at least one "Manipulated Variable" and "Measured Output" respectively.
+
+<()Clearing will erase all models, controllers, and scenarios in this design.  You might want to save the design before clearing.
+>()*JA*Clearing will erase all models, controllers, and scenarios in this design.  You might want to save the design before clearing.
+
+<()Clear "%s" now?
+>()*JA*Clear "%s" now?
+
+<()Are you sure you want to delete project "%s"?
+>()*JA*Are you sure you want to delete project "%s"?
+
+<()Specify number of Manipulated Variables (MVs) for MPC block "%s"
+>()*JA*Specify number of Manipulated Variables (MVs) for MPC block "%s"
+
+<()Invalid Entry.  The number of Manipulated Variables must be a positive integer.
+>()*JA*Invalid Entry.  The number of Manipulated Variables must be a positive integer.
+
+<()Setting up linearization i/o points and output constraints...
+>()*JA*Setting up linearization i/o points and output constraints...
+
+<()Could not assign linearization i/o points. Message returned was:
+>()*JA*Could not assign linearization i/o points. Message returned was:
+
+<()Trimming the model...
+>()*JA*Trimming the model...
+
+<()The structure of the Simulink model has changed since the operating point was computed. The most likely cause is that a previously empty MPC block was replaced by a valid MPC object, which has changed the number of states in the model. Create a new operating point for this model before linearizing.
+>()*JA*The structure of the Simulink model has changed since the operating point was computed. The most likely cause is that a previously empty MPC block was replaced by a valid MPC object, which has changed the number of states in the model. Create a new operating point for this model before linearizing.
+
+<()Cannot linearize model
+>()*JA*Cannot linearize model
+
+<()The selected operating point node does not contain the output constraint information needed to define the nominal values.
+>()*JA*The selected operating point node does not contain the output constraint information needed to define the nominal values.
+
+<()Linearizing the plant model seen by the MPC block...
+>()*JA*Linearizing the plant model seen by the MPC block...
+
+<()Adding linearized plant model to the project...
+>()*JA*Adding linearized plant model to the project...
+
+<()The operating condition specifications could not be synchronized with the model %s due to the following error:
+>()*JA*The operating condition specifications could not be synchronized with the model %s due to the following error:
+
+<()Cannot modify operating point to open loop state.
+>()*JA*Cannot modify operating point to open loop state.
+
+<()There is already a variable "%s" in the workspace. Overwrite?
+>()*JA*There is already a variable "%s" in the workspace. Overwrite?
+
+<()There is a mismatch between the saved project and the associated Simulink model.
+>()*JA*There is a mismatch between the saved project and the associated Simulink model.
+
+<()Cannot open the Simulink model containing MPC block "%s".
+>()*JA*Cannot open the Simulink model containing MPC block "%s".
+
+<()The MPC block "%s" is no longer in the model.
+>()*JA*The MPC block "%s" is no longer in the model.
+
+<()Select a linearization input/output point to work with.
+>()*JA*Select a linearization input/output point to work with.
+
+<()Model "%s" contains %i inputs and %i outputs. Must have at least one of each. Aborting model import.
+>()*JA*Model "%s" contains %i inputs and %i outputs. Must have at least one of each. Aborting model import.
+
+<()LTI model "%s" is complex.  It cannot be imported to the MPC Design Tool.
+>()*JA*LTI model "%s" is complex.  It cannot be imported to the MPC Design Tool.
+
+<()"%s" is an array of LTI Models.  It cannot be imported to the MPC Design Tool.
+>()*JA*"%s" is an array of LTI Models.  It cannot be imported to the MPC Design Tool.
+
+<()Model "%s" cannot be converted to state space. It probably contains an improper transfer function. Import aborted.
+>()*JA*Model "%s" cannot be converted to state space. It probably contains an improper transfer function. Import aborted.
+
+<()Model "%s" contains %i input(s) and %i output(s).  Models imported previously contain %i input(s) and %i output(s).
+>()*JA*Model "%s" contains %i input(s) and %i output(s).  Models imported previously contain %i input(s) and %i output(s).
+
+<()In order to import model "%s" your design must be cleared.  All controllers and scenarios will be erased.
+>()*JA*In order to import model "%s" your design must be cleared.  All controllers and scenarios will be erased.
+
+<()Do you wish to clear design "%s"?
+>()*JA*Do you wish to clear design "%s"?
+
+<()Imported model "%s" contains at least one "InputName" or "OutputName" that conflicts with your current signal name settings.
+>()*JA*Imported model "%s" contains at least one "InputName" or "OutputName" that conflicts with your current signal name settings.
+
+<()Conflicting names in "%s" will be overwritten.
+>()*JA*Conflicting names in "%s" will be overwritten.
+
+<()Imported model "%s" contains at least one "%s" Group that conflicts with your current signal type settings.
+>()*JA*Imported model "%s" contains at least one "%s" Group that conflicts with your current signal type settings.
+
+<()Conflicting types in "%s" will be overwritten.
+>()*JA*Conflicting types in "%s" will be overwritten.
+
+<()Model "%s" has direct input/output feedthrough between the following manipulated variable input(s) and measured output(s):
+>()*JA*Model "%s" has direct input/output feedthrough between the following manipulated variable input(s) and measured output(s):
+
+<()Controller calculations will fail unless you change the manipulated variable input(s) to measured disturbance or unmeasured disturbance.
+>()*JA*Controller calculations will fail unless you change the manipulated variable input(s) to measured disturbance or unmeasured disturbance.
+
+<()Model "%s" has already been loaded. Do you want to replace it?
+>()*JA*Model "%s" has already been loaded. Do you want to replace it?
+
+<()Model "%s" cannot be imported because its %s signal names include the following duplicate(s):
+>()*JA*Model "%s" cannot be imported because its %s signal names include the following duplicate(s):
+
+<()Model "%s" was being used in at least one controller or scenario.
+>()*JA*Model "%s" was being used in at least one controller or scenario.
+
+<()All references to model "%s" have been replaced by "%s".
+>()*JA*All references to model "%s" have been replaced by "%s".
+
+<()"%s" is your only model.  Deleting it will reset project "%s" to its initial state.
+>()*JA*"%s" is your only model.  Deleting it will reset project "%s" to its initial state.
+
+<()All data you have entered will be erased.
+>()*JA*All data you have entered will be erased.
+
+<()Do you wish to delete model "%s"?
+>()*JA*Do you wish to delete model "%s"?
+
+<()Another model is named "%s". Please enter a different name.
+>()*JA*Another model is named "%s". Please enter a different name.
+
+<()You must import a model, controller, or design before selecting the "%s" node.
+>()*JA*You must import a model, controller, or design before selecting the "%s" node.
+
+<()MPC must have at least one "Manipulated Variable" and one "Measured Output".
+>()*JA*MPC must have at least one "Manipulated Variable" and one "Measured Output".
+
+<()Duplicate input signal name(s): "%s"
+>()*JA*Duplicate input signal name(s): "%s"
+
+<()Duplicate output signal name(s): "%s"
+>()*JA*Duplicate output signal name(s): "%s"
+
+<()You have changed signal types.
+>()*JA*You have changed signal types.
+
+<()In order to use these changes, you must overwrite all previously created controllers and scenarios.
+>()*JA*In order to use these changes, you must overwrite all previously created controllers and scenarios.
+
+<()Do you wish to overwrite them?
+>()*JA*Do you wish to overwrite them?
+
+<()"Initial Value" and "Size" must be finite.
+>()*JA*"Initial Value" and "Size" must be finite.
+
+<()"Time" and "Period" must be positive, finite.
+>()*JA*"Time" and "Period" must be positive, finite.
+
+<()Name "%s" is already in use. Reverting to "%s".
+>()*JA*Name "%s" is already in use. Reverting to "%s".
+
+<()Simulation aborted because specified duration is less than the control interval.
+>()*JA*Simulation aborted because specified duration is less than the control interval.
+
+<()Model "%s" in scenario "%s" has direct feedthrough for at least one manipulated variable. Simulation aborted.
+>()*JA*Model "%s" in scenario "%s" has direct feedthrough for at least one manipulated variable. Simulation aborted.
+
+<()Simulation using "%s" will not run. Diagnostic information follows: Error ID = %s, Message = %s
+>()*JA*Simulation using "%s" will not run. Diagnostic information follows: Error ID = %s, Message = %s
+
+<()You cannot delete your only scenario.
+>()*JA*You cannot delete your only scenario.
+
+<()If you wish to clear it and start over, first create a new scenario, then delete this one.
+>()*JA*If you wish to clear it and start over, first create a new scenario, then delete this one.
+
+<()Do you really want to delete scenario "%s"?
+>()*JA*Do you really want to delete scenario "%s"?
+
+<()Duration must be positive, finite.
+>()*JA*Duration must be positive, finite.
+
+<()Name the new scenario:
+>()*JA*Name the new scenario:
+
+<()Could not find scenario "%s".
+>()*JA*Could not find scenario "%s".
+
+<()No simulation scenarios defined yet.
+>()*JA*No simulation scenarios defined yet.
+
+<()System Identification model "%s" could not be converted to state space.
+>()*JA*System Identification model "%s" could not be converted to state space.
+
+<()Unable to load selected item.
+>()*JA*Unable to load selected item.
+
+<()File "%s" does not exist.
+>()*JA*File "%s" does not exist.
+
+<()"%s" is an invalid MATLAB variable name. Choose a name that contains no blanks, special characters, etc. and try again.
+>()*JA*"%s" is an invalid MATLAB variable name. Choose a name that contains no blanks, special characters, etc. and try again.
+
+<()"%s" already exists in the MATLAB workspace. Do you wish to overwrite it with the exported object? (If "No", you may then assign a new name or cancel.)
+>()*JA*"%s" already exists in the MATLAB workspace. Do you wish to overwrite it with the exported object? (If "No", you may then assign a new name or cancel.)
+
+<()File "%s" exists. Do you wish to overwrite it?
+>()*JA*File "%s" exists. Do you wish to overwrite it?
+
+<()There is no reference signal defined for this plot.
+>()*JA*There is no reference signal defined for this plot.
+
+<()Imported model contains an unrecognized InputGroup "%s".  Entries in "%s" will be classified as manipulated variables.
+>()*JA*Imported model contains an unrecognized InputGroup "%s".  Entries in "%s" will be classified as manipulated variables.
+
+<()Imported model assigns multiple signal types to one or more inputs or outputs.  Verify assignments for the following: "%s"
+>()*JA*Imported model assigns multiple signal types to one or more inputs or outputs.  Verify assignments for the following: "%s"
+
+<()Plant model must contain at least one Manipulated Variable.  Your model did not contain any, so all input signal types have been set to manipulated.  Make appropriate assignments in the "Input signal properties" table.
+>()*JA*Plant model must contain at least one Manipulated Variable.  Your model did not contain any, so all input signal types have been set to manipulated.  Make appropriate assignments in the "Input signal properties" table.
+
+<()Imported model contains an unrecognized OutputGroup "%s".  Entries in "%s" will be classified as measured outputs.
+>()*JA*Imported model contains an unrecognized OutputGroup "%s".  Entries in "%s" will be classified as measured outputs.
+
+<()Plant model must contain at least one Measured Output.  Your model did not contain any, so all output signal types have been set to measured.  Make appropriate assignments in the "Output signal properties" table.
+>()*JA*Plant model must contain at least one Measured Output.  Your model did not contain any, so all output signal types have been set to measured.  Make appropriate assignments in the "Output signal properties" table.
+
+<()MPC task "%s" exists and it is not overwritten. Rename "%s" before creating another new task.
+>()*JA*MPC task "%s" exists and it is not overwritten. Rename "%s" before creating another new task.
+
+<()Project "%s" exists. Do you want to replace it?
+>()*JA*Project "%s" exists. Do you want to replace it?
+
+<()Creation of new MPC task cancelled.
+>()*JA*Creation of new MPC task cancelled.
+
+<()Deleting MPC task "%s".
+>()*JA*Deleting MPC task "%s".
+
+<()MPC task "%s" created.
+>()*JA*MPC task "%s" created.
+
+<()Import of controller "%s" aborted.
+>()*JA*Import of controller "%s" aborted.
+
+<()Adding model "%s" to plant models list.
+>()*JA*Adding model "%s" to plant models list.
+
+<()Controller "%s" added to task "%s".
+>()*JA*Controller "%s" added to task "%s".
+
+<()Duplicate %s name(s): "%s"
+>()*JA*Duplicate %s name(s): "%s"
+
+<()Controller "%s" was saved as "%s" in %s.
+>()*JA*Controller "%s" was saved as "%s" in %s.
+
+<()Export of controller "%s" cancelled.
+>()*JA*Export of controller "%s" cancelled.
+
+<()Initializing controller "%s" settings.
+>()*JA*Initializing controller "%s" settings.
+
+<()Adding node "%s" to the explorer tree.
+>()*JA*Adding node "%s" to the explorer tree.
+
+<()Loading selected plant model
+>()*JA*Loading selected plant model
+
+<()Loading selected controller
+>()*JA*Loading selected controller
+
+<()Exporting "%s"
+>()*JA*Exporting "%s"
+
+<()Finishing exporting "%s"
+>()*JA*Finishing exporting "%s"
+
+<()No controller available.
+>()*JA*No controller available.
+
+<()Plant model "%s" was imported.
+>()*JA*Plant model "%s" was imported.
+
+<()Import of model "%s" was canceled.
+>()*JA*Import of model "%s" was canceled.
+
+<()Configuring the Control and Estimation Tools Manager
+>()*JA*Configuring the Control and Estimation Tools Manager
+
+<()Setting up linearization input/output points and output constraints
+>()*JA*Setting up linearization input/output points and output constraints
+
+<()Finding operating point
+>()*JA*Finding operating point
+
+<()Linearizing the plant
+>()*JA*Linearizing the plant
+
+<()Building MPC controller
+>()*JA*Building MPC controller
+
+<()Building MPC Design Project...
+>()*JA*Building MPC Design Project...
+
+<()Configuring Simulink Control Design for MPC...
+>()*JA*Configuring Simulink Control Design for MPC...
+
+<()Building a new MPC controller by deriving a plant model from Simulink
+>()*JA*Building a new MPC controller by deriving a plant model from Simulink
+
+<()Determining operating point...
+>()*JA*Determining operating point...
+
+<()Project build successfully completed. Click "OK" button.
+>()*JA*Project build successfully completed. Click "OK" button.
+
+<()Time-varying weights on manipulated variables must have the same length.
+>()*JA*Time-varying weights on manipulated variables must have the same length.
+
+<()Time-varying weights on the rate of change of manipulated variables must have the same length.
+>()*JA*Time-varying weights on the rate of change of manipulated variables must have the same length.
+
+<()Time-varying weights on the output variables must have the same length.
+>()*JA*Time-varying weights on the output variables must have the same length.
+
+<()Failed to find operating condition because MPC controller %s does not exist in base workspace.  Export it from the your MPC Task first.
+>()*JA*Failed to find operating condition because MPC controller %s does not exist in base workspace.  Export it from the your MPC Task first.
+
+<()Failed to find operating condition from the nominal values in MPC Task.
+>()*JA*Failed to find operating condition from the nominal values in MPC Task.
+
+<()MPC block is not connected to the rest of the simulink model.  Linearization abandoned.
+>()*JA*MPC block is not connected to the rest of the simulink model.  Linearization abandoned.
+
+<()Number of manipulated variable is not specified.
+>()*JA*Number of manipulated variable is not specified.
+
+<()To design or delete a MPC controller, the corresponding checkbox in the table has to be selected.
+>()*JA*To design or delete a MPC controller, the corresponding checkbox in the table has to be selected.
+
+<()You must have at least one MPC controller in the Multiple MPC Controllers block.
+>()*JA*You must have at least one MPC controller in the Multiple MPC Controllers block.
+
+<()Invalid Performance Function.  It must be a string.
+>()*JA*Invalid Performance Function.  It must be a string.
+
+<()Tuning advisor does not support sensitivity analysis on MPC with time-varying weights or non-diagonal weights.
+>()*JA*Tuning advisor does not support sensitivity analysis on MPC with time-varying weights or non-diagonal weights.
+
+<()MPC Tuning Advisor for Task
+>()*JA*MPC Tuning Advisor for Task
+
+<()<html>In Column 2, specify performance weights that are used in the selected performance function.<br>In Column 5, specify new controller weights based on the sensitivity analysis in Column 3 and 4.</html>
+>()*JA*<html>In Column 2, specify performance weights that are used in the selected performance function.<br>In Column 5, specify new controller weights based on the sensitivity analysis in Column 3 and 4.</html>
+
+<()Click to evaluate original MPC, which sets up the performance baseline for MPC tuning.
+>()*JA*Click to evaluate original MPC, which sets up the performance baseline for MPC tuning.
+
+<()Click to compare the performance between original MPC and the MPC with new weights.
+>()*JA*Click to compare the performance between original MPC and the MPC with new weights.
+
+<()Check/Uncheck to make the tuning advisor dialog modal/not modal. 
+>()*JA*Check/Uncheck to make the tuning advisor dialog modal/not modal. 
+
+<()Click to update the controller in the MPC Design Task with new weights.
+>()*JA*Click to update the controller in the MPC Design Task with new weights.
+
+<()Click to revert to the original controller weights in Column 5.
+>()*JA*Click to revert to the original controller weights in Column 5.
+
+<()Click to close the tuning advisor.  Performance weights will be saved on exit.
+>()*JA*Click to close the tuning advisor.  Performance weights will be saved on exit.
+
+<()<html>Select desired closed-loop performance measurement:<br>ISE - Integral of Square Error<br>IAE - Integral of Absolute Error<br>ITSE - Integral of Time-Weighted Square Error<br>ITAE - Integral of Time-Weighted Absolute Error</html>
+>()*JA*<html>Select desired closed-loop performance measurement:<br>ISE - Integral of Square Error<br>IAE - Integral of Absolute Error<br>ITSE - Integral of Time-Weighted Square Error<br>ITAE - Integral of Time-Weighted Absolute Error</html>
+
+<()Scenario in design does not exist anymore.  Please restart tuning advisor.
+>()*JA*Scenario in design does not exist anymore.  Please restart tuning advisor.
+
+<()Controller in design does not exist anymore.  Please restart tuning advisor.
+>()*JA*Controller in design does not exist anymore.  Please restart tuning advisor.
+
+<()Controller in design does not match the controller in scenario.
+>()*JA*Controller in design does not match the controller in scenario.
+
+<()Controller in MPC Tool has been successfully updated with weights in current tuning.
+>()*JA*Controller in MPC Tool has been successfully updated with weights in current tuning.
+
+<()Model Predictive Control Task: MPC Controller
+>()*JA*Model Predictive Control Task: MPC Controller
+
+<()Model Predictive Control Task: Multiple MPC Controllers
+>()*JA*Model Predictive Control Task: Multiple MPC Controllers
+
+% 218 messages need translation.

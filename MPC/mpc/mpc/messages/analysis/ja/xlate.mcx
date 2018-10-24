@@ -1,0 +1,25 @@
+<()In the "%s" command, "ref_preview" must be a string of either "on" or "off".
+>()*JA*In the "%s" command, "ref_preview" must be a string of either "on" or "off".
+
+<()In the "%s" command, "md_preview" must be a string of either "on" or "off".
+>()*JA*In the "%s" command, "md_preview" must be a string of either "on" or "off".
+
+<()In the "%s" command, "y" must be a finite real vector with %d components.
+>()*JA*In the "%s" command, "y" must be a finite real vector with %d components.
+
+<()In the "%s" command, "u" must be a finite real vector with %d components.
+>()*JA*In the "%s" command, "u" must be a finite real vector with %d components.
+
+<()In the "%s" command, the part of "u" that represents unmeasured disturbance signals must be zero.
+>()*JA*In the "%s" command, the part of "u" that represents unmeasured disturbance signals must be zero.
+
+<()No MPC weights defined for cumulative performance, assuming weights defined in controller.
+>()*JA*No MPC weights defined for cumulative performance, assuming weights defined in controller.
+
+<()Invalid weights.  Number of I/O variables should match.
+>()*JA*Invalid weights.  Number of I/O variables should match.
+
+<()Supplied performance function must return a scalar.
+>()*JA*Supplied performance function must return a scalar.
+
+% 8 messages need translation.

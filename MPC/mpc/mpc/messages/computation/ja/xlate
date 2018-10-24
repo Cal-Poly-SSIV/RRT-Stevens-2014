@@ -1,0 +1,248 @@
+% Copyright 1999-2007 The MathWorks, Inc.
+% $Revision: 1.1.8.4 $  $Date: 2008/12/29 02:12:12 $
+
+<()InvalidState
+>()In the "%s" command, "state" must be a valid MPCSTATE object. Type "help mpcstate" for more information.
+
+<()InvalidMeasurement
+>()In the "%s" command, current measured plant outputs "y" must be real finite values.
+
+<()InvalidMeasurementSize
+>()In the "%s" command, current measured plant outputs "y" must have %d entries.
+
+<()InvalidSetpoint
+>()In the "%s" command, current setpoints "r" must be real finite values.
+
+<()InvalidSetpointSize
+>()In the "%s" command, current setpoints "r" must have %d entries or columns.
+
+<()InvalidMeasuredDisturbance
+>()In the "%s" command, current measured disturbances "v" must be real finite values.
+
+<()InvalidMeasuredDisturbanceSize
+>()In the "%s" command, current measured disturbances "v" must have %d entries or columns.
+
+<()InvalidManipulatedVariableSize
+>()In the "%s" command, manipulated variable targets "utarget" must be a vector of %d entries.
+
+<()InvalidTimeVector
+>()In the "%s" command, time vector "t" must be real values of length at least 2.
+
+<()NoMeasurement
+>()In the "%s" command, output responses data "y" must have size [Nt, Ny], Nt = length of time vector, Ny = number of outputs.
+
+<()InvalidMeasurementSize2D
+>()In the "%s" command, output responses data "y" has size [%i, %i], but [%i %i] is expected.
+
+<()NoSetpoint
+>()In the "%s" command, setpoints data "r" must have size [Nt, Ny], Nt = length of time vector, Ny = number of outputs.
+
+<()InvalidSetpointSize2D
+>()In the "%s" command, setpoints data "r" has size [%i, %i], but [%i %i] is expected.
+
+<()NoMV
+>()In the "%s" command, manipulated variable inputs data "u" must have size of [Nt, Nu], Nt = length of time vector, Ny = number of inputs.
+
+<()InvalidMVSize
+>()In the "%s" command, manipulated variable inputs data "u" has size [%i, %i], but [%i %i] is expected.
+
+<()InvalidMDSize
+>()In the "%s" command, measured disturbance data "v" has size [%i, %i], but [%i %i] is expected.
+
+<()InvalidUMDSize
+>()In the "%s" command, unmeasured disturbance data "d" has size [%i, %i], but [%i %i] is expected.
+
+<()InvalidTf
+>()In the "%s" command, the total number of simulation steps provided by the second input argument must be a positive finite real scalar.
+
+<()InvalidStateValue
+>()State components must be finite real values.
+
+<()InvalidDim
+>()"%s" must be a vector of %d entries.
+
+<()InvalidSimOptRefPreviewFlag
+>()Reference preview flag must be a string of either "on" or "off".
+
+<()InvalidSimOptMDPreviewFlag
+>()Measured Disturbance preview flag must be a string of either "on" or "off".
+
+<()InvalidMeasurementNoise
+>()Measurement noise signal must be a real valued array with %d column(s).
+
+<()InvalidInputNoise
+>()Input noise signal must be a real valued array with %d column(s).
+
+<()InvalidMVSignal
+>()Manipulated variable signal must be a real valued array with %d column(s).
+
+<()InvalidUMDSignal
+>()Unmeasured disturbance signal must be a real valued array with %d column(s).
+
+<()InvalidSimModel
+>()The "Model" property of "mpcsimopt" object must be an LTI object or a structure with fields "Plant" and "Nominal".
+
+<()InvalidSimModelPlantMV
+>()The "Model.Plant" property of "mpcsimopt" object must have %d manipulated variables as "MPCobj.Model.Plant" does.
+
+<()InvalidSimModelPlantAllOutput
+>()The "Model.Plant" property of "mpcsimopt" object must have %d total outputs as MPCobj.Model.Plant does.
+
+<()InvalidSimModelPlantMO
+>()The "Model.Plant" property of "mpcsimopt" object must have %d measured outputs as MPCobj.Model.Plant does.
+
+<()InvalidSimModelPlantMD
+>()The "Model.Plant" property of "mpcsimopt" object must have %d measured disturbances as MPCobj.Model.Plant does.
+
+<()InvalidSimModelPlantMOMatch
+>()In the "Model.Plant" property of "mpcsimopt" object, measured output indices are different from what MPCobj.Model.Plant has.
+
+<()InvalidSimModelPlantMVMatch
+>()In the "Model.Plant" property of "mpcsimopt" object, manipulated variable indices are different from what MPCobj.Model.Plant has.
+
+<()InvalidSimModelPlantMDMatch
+>()In the "Model.Plant" property of "mpcsimopt" object, measured disturbance indices are different from what MPCobj.Model.Plant has.
+
+<()InvalidStateSize
+>()The "PlantInitialState" property of "mpcsimopt" object must have %d real entries.
+
+<()InvalidMAXITER
+>()In the "%s" command, the maximum number of iterations "maxiter" must be at least 1.
+
+<()InvalidHessianOrLinCost
+>()In the "%s" command, either Hessian matrix "H" or linear cost "f" has wrong dimensions.
+
+<()InvalidConsMatrixOrLinCost
+>()In the "%s" command, either constraint matrix "A" or linear cost "f" has wrong dimensions.
+
+<()InvalidConsMatrixOrRHS
+>()In the "%s" command, either constraint matrix "A" or right hand side "b" have wrong dimensions.
+
+<()InputRateMinNotSpecified1
+>()MPC problem is constrained and "ManipulatedVariables.RateMin" is not completely specified or has infinite values.
+
+<()InputRateMinNotSpecified2
+>()Setting values to %0.5g to prevent numerical problems in QP.
+
+<()InputRateMinTooSmall1
+>()One or more entries in "ManipulatedVariables.RateMin" were < %0.5g. Modified to %0.5g to prevent numerical problems in QP.
+
+<()InputRateMinTooSmall2
+>()(Type "mpc_defaults" and look for "bigdeltaumin" variable for more information).
+
+<()OpenLoopIgnoreRef
+>()Simulation is in open-loop and setpoint signals will be ignored.
+
+<()OptimizerMaxIterRounded
+>()The "Optimizer.MaxIter" property of "mpc" object is rounded to the nearest integer %d.
+
+<()OptimizerMinOutputECRTooSmall
+>()The "Optimizer.MinOutputECR" property of "mpc" object is smaller than the default value %7.5f.
+
+<()PredictionHorizonRounded
+>()The "PredictionHorizon" property of "mpc" object is rounded to the nearest integer %d.
+
+<()TryPredictionHorizon
+>()The "PredictionHorizon" property of "mpc" object is empty. Trying PredictionHorizon = %d.
+
+<()PredictionHorizonTooSmall
+>()The "PredictionHorizon" property of "mpc" object %d is smaller than the maximum delay %d in the model. Choose a larger prediction horizon, for instance %d.
+
+<()PredictionHorizonIncreased
+>()The "PredictionHorizon" property of "mpc" object is further increased to %d because model contains delays.
+
+<()MAXITERExceeded
+>()Maximum number of iterations exceeded, solution is unreliable. You may consider adjusting the "Optimizer.MaxIter" property of "mpc" object.
+
+<()SolverInfeasible
+>()The constraints are overly stringent. No feasible solution. Previous optimal sequence will be used.
+
+<()MinOutputECRTooSmall
+>()The "%s" property in the specification is too small. Increased to "Optimizer.MinOutputECR" = %2.1e.
+
+<()SpecTruncated
+>()The "%s" property in the specification has more entries than the prediction horizon %d. Truncated at %d.
+
+<()ClosedLoopIgnoreMV
+>()Simulation is in closed-loop (the "OpenLoop" property of "mpcsimopt" object is "off") and the "MVSignal" property of "mpcsimopt" object is ignored.
+
+<()IgnoreDisturbanceSignal
+>()The "Model.Disturbance" property of "mpcsimopt" object is ignored. Define unmeasured disturbance signals in the "UnmeasuredDisturbance" of "mpcsimopt" object.
+
+<()IgnoreNoiseSignal
+>()The "Model.Noise" property of "mpcsimopt" object is ignored. Define measurement noise in the "OutputNoise" of "mpcsimopt" object.
+
+<()NominalValueIncompatible
+>()MPC model has nonzero nominal state values that are not compatible with the simulation plant. Setting "Model.Nominal.X" = "Model.Nominal.DX" = [] in the "mpcsimopt" object.
+
+<()AssumeXMin
+>()In the QP problem the lower bound of optimization variables "xmin" is not assigned. Assuming -1000 on each variable.
+
+<()HessianNonsymmetric
+>()Hessian matrix of the QP problem is not symmetric.  Resetting H=(H+H')/2.
+
+<()HessianSingular
+>()Hessian matrix of the QP problem is close to singular. Augmenting diagonal terms.
+
+<()PosLowerBound
+>()Lower bounds on blocked input increments are positive. Replaced by zeros.
+
+<()NegUpperBound
+>()Upper bounds on blocked input increments are negative. Replaced by zeros.
+
+<()X0Incorrect
+>()Initial state may be incorrect.
+
+<()XOffsetIncorrect
+>()State offset may be incorrect.
+
+<()XDotIncorrect
+>()State derivative offset may be incorrect.
+
+<()U0Incorrect
+>()Initial state may be incorrect because initial input is nonzero.
+
+<()GpcSyntaxError
+>()Invalid syntax. Use MPC = gpc2mpc(G) or MPC = gpc2mpc(G, Options).
+
+<()GpcInvalidOptionT
+>()Invalid option. T polynomial must be a non-empty vector.
+
+<()GpcInvalidOptionTcoeff
+>()Invalid option. First coefficient of T polynomial must be non-zero.
+
+<()GpcInvalidOptionN1NUN2
+>()Invalid option. Horizons N1, N2, and NU must be >= 1.
+
+<()GpcInvalidOptionLam
+>()Invalid option. Lam (control increment penalty weight) must be non-negative.
+
+<()GpcInvalidG
+>()G must be a TF, SS, or ZPK object.
+
+<()GpcInvalidGSO
+>()G must model the response for a single output.
+
+<()GpcInvalidOptionMVIndex1
+>()Invalid option. MVindex must be a scalar.
+
+<()GpcInvalidOptionMVIndex2
+>()Invalid option. MVindex is not compatible with the input dimension of G.
+
+<()GpcInvalidGTs
+>()G sampling period must be a positive constant.
+
+<()GpcInvalidGFeedThrough
+>()G has direct feedthrough from the MV to the output.
+
+<()GpcInvalidOptionStructure
+>()Options must be a MATLAB structure variable.
+
+<()GpcInvalidOptionField1
+>()Options must contain field "%s".
+
+<()GpcInvalidOptionField2
+>()Options contains invalid field "%s".
+
+
+

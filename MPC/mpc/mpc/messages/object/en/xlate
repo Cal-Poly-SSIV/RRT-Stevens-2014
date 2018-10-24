@@ -1,0 +1,213 @@
+% Copyright 1999-2007 The MathWorks, Inc.
+% $Revision: 1.1.8.1 $  $Date: 2007/11/09 20:41:08 $
+
+<()Invalid2ndSampleTime
+>()In the "%s" command, sample time "ts" must be a finite real scalar.
+
+<()Invalid2ndIOType
+>()The second input argument of the "%s" command must be a string of either "input" or "output" as signal type.
+
+<()Invalid3rdIndex
+>()The third input argument of the "%s" command must be a scalar integer as signal index.
+
+<()Invalid4thName
+>()The forth input argument of the "%s" command must be a string as signal name.
+
+<()IndexOutOfBoundary
+>()The "%s" command requires the index of the "%s" signal to be between 1 and %d. 
+
+<()NoConcatenation
+>()Cannot concatenate "mpc" objects.
+
+<()UseSetToModifyProperty
+>()Use SET command to modify the properties of "mpc" object.
+
+<()Invalid1stInputForConstructor
+>()The first input argument of the "mpc" command must be one of the following: an LTI object, an IDMODEL object or a structure of models and offsets.
+
+<()Invalid2ndX0
+>()The second input argument of the "%s" command must be a valid "mpcdata.mpcstate" object.
+
+<()SetInvalidOutputSize
+>()Only "set(MPCOBJ)" or "set(MPCOBJ,'PropertyName')" command allows an output argument.
+
+<()SetInvalidPropertyName
+>()The second input argument of the "set" command must be a single-line string as property name.
+
+<()SetNoPropertyName
+>()Property name "%s" not found when using the "set" command.
+
+<()SetAmbiguousPropertyName
+>()Ambiguous property name "%s" found when using the "set" command. Supply more characters.
+
+<()SetEmptyObject
+>()The "set" command cannot set properties of an empty mpc object. Use "mpc" command instead.
+
+<()SetInvalidPair
+>()Property name and value must be in pairs when using the "set" command.
+
+<()SetInvalidModel
+>()The "Model" property of "mpc" object must be one of the following: an LTI object, an IDMODEL object or a structure of models and offsets.
+
+<()SetInvalidNote
+>()The "Notes" property of "mpc" object must be a cell array of strings.
+
+<()SizeInvalidType
+>()In the "size" command, "type" must be one of the following strings: "mv", "mo", "uo", "md" or "ud".
+            
+<()InvalidSubs
+>()Unknown reference type: "%s". The object requires "dot" type of referencing.
+
+<()Size1
+>()MPC controller with %d measured output(s), %d unmeasured output(s),
+
+<()Size2
+>()%d manipulated input(s), %d measured disturbance(s), %d unmeasured disturbance(s)
+
+<()InvalidMPCHelp1stType1
+>()When calling the "mpchelp" command with one input argument, it must be either a string of command name or an "mpc" object.
+
+<()InvalidMPCHelp1stType2
+>()When calling the "mpchelp" command with two input arguments, the first one must be an "mpc" object.
+
+<()InvalidMPCHelp2ndType
+>()When calling the "mpchelp" command with two input arguments, the second one must be a string.
+
+<()InvalidMPCTOOLObject
+>()The "%s" command expects input argument No.%i to be an "mpc" object, but it is "%s".
+
+<()NoSwing
+>()Java Swing not enabled.  It must be enabled to use the "%s" command.
+
+<()InvalidVerbosity
+>()The input argument of the "%s" command must be a string of either "on" or "off". 
+
+<()InvalidPlantModel
+>()The first input argument of the "%s" command must be a non-empty "lti" object.
+
+<()InvalidSignalPair
+>()In the "setmpcsignals" command, signal type and channels must be in pairs, e.g. "setmpcsignals(MPCobj,SignalType1,Channels1,SignalType2,Channels2, ...)".
+
+<()InvalidSignalString
+>()In the "%s" command, signal type must be a single-line string.
+
+<()InvalidSignalType
+>()Unknown or ambiguous signal type found in the "%s" command.  It must be one of the following strings: "MV", "MD", "UD", "MO" or "UO".
+
+<()InvalidChannelType
+>()In the "%s" command, channel indices must be positive integers.
+
+<()ExtraInputArgumentIgnored
+>()Extra input arguments to the "mpc" command ignored.
+
+<()CHGreaterThanPH
+>()"ControlHorizon" > "PredictionHorizon". Truncated.
+
+<()SumCHGreaterThanPH
+>()"sum(ControlHorizon)" > "PredictionHorizon". Control moves will be truncated.
+
+<()AssumeSampleTimePlantModel
+>()No sample time provided for plant model. Assuming sample time = controller's sample time = %g.
+
+<()AssumeSampleTimeNoiseModel
+>()No sample time provided for noise model. Assuming sample time = plant model's sample time = %g.
+
+<()AssumeSampleTimeUMDModel
+>()No sample time provided for disturbance model. Assuming sample time = plant model's sample time = %g.
+
+<()FeedThroughAddedToNoiseModel
+>()A feedthrough channel in NoiseModel was inserted to prevent problems with estimator design.
+
+<()UMDModelresample
+>()Resampling the "Model.Disturbance" property of "mpc" object to controller's sample time %0.4g.
+
+<()IntegratorAddedToUMDModel
+>()Integrated white noise added on unmeasured output channel #%d
+
+<()TooManyWeights
+>()Too many rows in "%s". Extra rows deleted.
+
+<()SignalFromSysID1
+>()All input signals are labeled as "Measured" or "Noise". The model was probably converted from the Identification Toolbox.
+
+<()SignalFromSysID2
+>()All "Measured" inputs will be treated as manipulated variables, all "Noise" inputs as unmeasured disturbances.
+
+<()SignalFromSysID3
+>()Type "help setmpcsignals" for more information.
+
+<()InitialX
+>()Initial conditions reset to zeros.
+
+<()InitialXffset
+>()State offsets reset to zeros.
+
+<()AssumeControlHorizon
+>()The "ControlHorizon" property of the "mpc" object is empty. Assuming %d.
+
+<()AssumeNoiseModel
+>()The "Model.Noise" property of the "mpc" object is empty. Assuming white noise on each measured output channel.
+
+<()ConvertIDToSS
+>()Converting "idmodel" object to state-space.
+
+<()ResampleNoiseModel
+>()Resampling the "Model.Noise" property of "mpc" object to controller's sample time %0.4g.
+
+<()ResampleUMDModel
+>()Resampling the %s disturbance model to controller's sample time %0.4g.
+
+<()ConvertDelayToSS
+>()%s disturbance model: converting delays to states.
+
+<()NoModelDisturbanceGeneral
+>()The "Model.Disturbance" property of "mpc" object is empty:
+
+<()NoModelDisturbance1
+>()Assuming unmeasured input disturbance #%d is integrated white noise.
+
+<()NoModelDisturbance2
+>()Assuming unmeasured input disturbance #%d is white noise.
+
+<()WhiteNoiseAdded
+>()Integrated white noise added on measured output channel #%d.
+
+<()NoWeightOnMV
+>()The "Weights.ManipulatedVariables" property of "mpc" object is empty. Assuming default %7.5f.
+
+<()NoWeightOnMVRate
+>()The "Weights.ManipulatedVariablesRate" property of "mpc" object is empty. Assuming default %7.5f.
+
+<()NoWeightOnMO
+>()The "Weights.OutputVariables" property of "mpc" object is empty. Assuming default %7.5f.
+
+<()NoSpecSpecified
+>()Specifications for the "%s" property of "mpc" object not found. Assuming default values.
+
+<()SpecTooSmall
+>()The number of elements in the "%s" property of "mpc" object is smaller than %d. Assuming default values.
+
+<()NoUMDSpecified
+>()No input disturbance model specified. Assuming default integrators.
+
+<()NoOutputDistModelSpecified
+>()No output disturbance model specified. Assuming default output integrators.
+
+<()AssumeUnspecifiedMV
+>()Assuming unspecified input signals are manipulated variables.
+
+<()AssumeUnspecifiedMO
+>()Assuming unspecified output signals are measured outputs.
+
+<()ConvertPlantToSS
+>()Converting the "Model.Plant" property of "mpc" object to state-space.
+
+<()ResamplePlantModel
+>()Resampling the "Model.Plant" property of "mpc" object to controller's sample time.
+
+<()ConvertToDiscrete
+>()Converting model to discrete time.
+
+<()DelayToSS
+>()Converting delays to states.
+

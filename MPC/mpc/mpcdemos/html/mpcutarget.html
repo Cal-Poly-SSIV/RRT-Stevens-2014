@@ -1,0 +1,101 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   <!--
+This HTML is auto-generated from an M-file.
+To make changes, update the M-file and republish this document.
+      --><title>MPC Control with Input Targets</title><meta name="generator" content="MATLAB 7.10"><meta name="date" content="2010-01-05"><meta name="m-file" content="mpcutarget"><link rel="stylesheet" type="text/css" href="../../../matlab/demos/private/style.css"></head><body><div class="header"><div class="left"><a href="matlab:edit mpcutarget">Open mpcutarget.m in the Editor</a></div><div class="right"><a href="matlab:echodemo mpcutarget">Run in the Command Window</a></div></div><div class="content"><h1>MPC Control with Input Targets</h1><!--introduction--><!--/introduction--><h2>Contents</h2><div><ul><li><a href="#2">Define the Plant to be Controlled</a></li><li><a href="#4">MPC Controller Setup</a></li><li><a href="#8">Simulation Using Simulink&reg;</a></li></ul></div><p>This demonstration shows how to design an MPC controller to control a system with two inputs and one output, and how to assign a target set-point for the first manipulated variable.</p><h2>Define the Plant to be Controlled<a name="2"></a></h2><pre class="codeinput"><span class="keyword">if</span> ~mpcchecktoolboxinstalled(<span class="string">'simulink'</span>)
+    disp(<span class="string">'Simulink(R) is required to run this demo.'</span>)
+    <span class="keyword">return</span>
+<span class="keyword">end</span>
+</pre><pre class="codeinput">N1=[3 1];
+D1=[1 2*.3 1];
+N2=[2 1];
+D2=[1 2*.5 1];
+sys=ss(tf({N1,N2},{D1,D2}),<span class="string">'min'</span>);
+A=sys.a;B=sys.b;C=sys.c;D=sys.d;
+x0=[0 0 0 0]';
+</pre><h2>MPC Controller Setup<a name="4"></a></h2><pre class="codeinput">Ts=.4;                      <span class="comment">% Sampling time</span>
+model=c2d(ss(A,B,C,D),Ts);  <span class="comment">% discrete-time prediction model</span>
+mpcobj=mpc(model,Ts,20,5);
+</pre><pre class="codeoutput">--&gt;The "Weights.ManipulatedVariables" property of "mpc" object is empty. Assuming default 0.00000.
+--&gt;The "Weights.ManipulatedVariablesRate" property of "mpc" object is empty. Assuming default 0.10000.
+--&gt;The "Weights.OutputVariables" property of "mpc" object is empty. Assuming default 1.00000.
+</pre><p>Change default weights.</p><pre class="codeinput">mpcobj.weights.manipulated=[0.3 0];     <span class="comment">% weight difference MV#1 - Target#1</span>
+mpcobj.weights.manipulatedrate=[0 0];
+mpcobj.weights.output=1;
+</pre><p>Define input specifications.</p><pre class="codeinput">clear <span class="string">MV</span>
+MV(1)=struct(<span class="string">'RateMin'</span>,-.5,<span class="string">'RateMax'</span>,.5);
+MV(2)=struct(<span class="string">'RateMin'</span>,-.5,<span class="string">'RateMax'</span>,.5);
+</pre><p>The following sets up a target set-point u=2 for the first manipulated variable.</p><pre class="codeinput">MV(1).Target=2; <span class="comment">% Input steady-state set-point</span>
+mpcobj.MV=MV;
+</pre><h2>Simulation Using Simulink&reg;<a name="8"></a></h2><pre class="codeinput">Tstop=40;                       <span class="comment">% Simulation time</span>
+open_system(<span class="string">'mpc_utarget'</span>)      <span class="comment">% Open Simulink(R) Model</span>
+sim(<span class="string">'mpc_utarget'</span>,Tstop);       <span class="comment">% Start Simulation</span>
+</pre><pre class="codeoutput">--&gt;Integrated white noise added on measured output channel #1.
+--&gt;The "Model.Noise" property of the "mpc" object is empty. Assuming white noise on each measured output channel.
+</pre><img vspace="5" hspace="5" src="mpcutarget_01.png" alt=""> <img vspace="5" hspace="5" src="mpcutarget_02.png" alt=""> <img vspace="5" hspace="5" src="mpcutarget_03.png" alt=""> <pre class="codeinput">bdclose(<span class="string">'mpc_utarget'</span>)
+</pre><p class="footer">Copyright 1990-2009 The MathWorks, Inc.<br>
+          Published with MATLAB&reg; 7.10</p><p class="footer" id="trademarks">MATLAB and Simulink are registered trademarks of The MathWorks, Inc.  Please see <a href="http://www.mathworks.com/trademarks">www.mathworks.com/trademarks</a> for a list of other trademarks owned by The MathWorks, Inc.  Other product or brand names are trademarks or registered trademarks of their respective owners.</p></div><!--
+##### SOURCE BEGIN #####
+%% MPC Control with Input Targets
+
+%%
+% This demonstration shows how to design an MPC controller to control a
+% system with two inputs and one output, and how to assign a target 
+% set-point for the first manipulated variable.
+%
+% Copyright 1990-2009 The MathWorks, Inc.  
+% $Revision: 1.1.8.9 $  $Date: 2009/09/21 00:04:33 $   
+
+%% Define the Plant to be Controlled
+if ~mpcchecktoolboxinstalled('simulink')
+    disp('Simulink(R) is required to run this demo.')
+    return
+end
+
+%%
+N1=[3 1];
+D1=[1 2*.3 1]; 
+N2=[2 1];
+D2=[1 2*.5 1]; 
+sys=ss(tf({N1,N2},{D1,D2}),'min');
+A=sys.a;B=sys.b;C=sys.c;D=sys.d;
+x0=[0 0 0 0]';
+
+%% MPC Controller Setup
+Ts=.4;                      % Sampling time
+model=c2d(ss(A,B,C,D),Ts);  % discrete-time prediction model
+mpcobj=mpc(model,Ts,20,5);
+
+%%
+% Change default weights.
+mpcobj.weights.manipulated=[0.3 0];     % weight difference MV#1 - Target#1
+mpcobj.weights.manipulatedrate=[0 0];
+mpcobj.weights.output=1;
+
+%%
+% Define input specifications.
+clear MV
+MV(1)=struct('RateMin',-.5,'RateMax',.5);
+MV(2)=struct('RateMin',-.5,'RateMax',.5);
+
+%%
+% The following sets up a target set-point u=2 for the first manipulated 
+% variable.
+MV(1).Target=2; % Input steady-state set-point
+mpcobj.MV=MV;
+
+%% Simulation Using Simulink(R)
+Tstop=40;                       % Simulation time
+open_system('mpc_utarget')      % Open Simulink(R) Model
+sim('mpc_utarget',Tstop);       % Start Simulation
+
+%%
+bdclose('mpc_utarget')          
+displayEndOfDemoMessage(mfilename)
+
+##### SOURCE END #####
+--></body></html>

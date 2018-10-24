@@ -1,0 +1,16 @@
+<()The first input argument of the "%s" command must be a "mpc" object.
+>()*JA*The first input argument of the "%s" command must be a "mpc" object.
+
+<()The second input argument of the "%s" command must be a "mpc" object.
+>()*JA*The second input argument of the "%s" command must be a "mpc" object.
+
+<()The "%s" command requires a non-empty "mpc" object.
+>()*JA*The "%s" command requires a non-empty "mpc" object.
+
+<()Property name(s) must be a string or a cell vector of strings.
+>()*JA*Property name(s) must be a string or a cell vector of strings.
+
+<()File "%s" not found on MATLAB path.
+>()*JA*File "%s" not found on MATLAB path.
+
+% 5 messages need translation.

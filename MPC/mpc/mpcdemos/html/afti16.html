@@ -1,0 +1,144 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   <!--
+This HTML is auto-generated from an M-file.
+To make changes, update the M-file and republish this document.
+      --><title>Constrained Multivariable (2x2) MPC Control of an AFTI-F16 Aircraft</title><meta name="generator" content="MATLAB 7.10"><meta name="date" content="2010-01-05"><meta name="m-file" content="afti16"><link rel="stylesheet" type="text/css" href="../../../matlab/demos/private/style.css"></head><body><div class="header"><div class="left"><a href="matlab:edit afti16">Open afti16.m in the Editor</a></div><div class="right"><a href="matlab:echodemo afti16">Run in the Command Window</a></div></div><div class="content"><h1>Constrained Multivariable (2x2) MPC Control of an AFTI-F16 Aircraft</h1><!--introduction--><!--/introduction--><h2>Contents</h2><div><ul><li><a href="#2">MPC Controller Setup</a></li><li><a href="#7">Simulation Using Simulink&reg;</a></li></ul></div><p>This demonstration shows how to use Model Predictive Control Toolbox&#8482; to control a simplified model of the dynamics of an AFTI-F16 aircraft with saturating actuators [1,2].</p><p>Reference:</p><p>[1] P. Kapasouris, M. Athans and G. Stein, "Design of feedback control systems for unstable plants with saturating actuators", Proc. IFAC Symp. on Nonlinear Control System Design, Pergamon Press, pp.302--307, 1990</p><p>[2] A.&nbsp;Bemporad, A.&nbsp;Casavola, and E.&nbsp;Mosca, "Nonlinear control of constrained linear systems via predictive reference management," IEEE&reg; Trans. Automatic Control, vol. AC-42, no. 3, pp. 340-349, 1997.</p><h2>MPC Controller Setup<a name="2"></a></h2><pre class="codeinput"><span class="keyword">if</span> ~mpcchecktoolboxinstalled(<span class="string">'simulink'</span>)
+    disp(<span class="string">'Simulink(R) is required to run this demo.'</span>)
+    <span class="keyword">return</span>
+<span class="keyword">end</span>
+</pre><p>The linearized open-loop dynamic model for the attack and pitch angles as a function of the elevator and flaperon angles is:</p><pre class="codeinput">Ts=.05;        <span class="comment">%Sampling time</span>
+Tstop=40*Ts;   <span class="comment">%Simulation time</span>
+
+A=[-.0151 -60.5651 0 -32.174;
+     -.0001 -1.3411 .9929 0;
+     .00018 43.2541 -.86939 0;
+      0      0       1      0];
+B=[-2.516 -13.136;
+     -.1689 -.2514;
+     -17.251 -1.5766;
+     0        0];
+C=[0 1 0 0;
+     0 0 0 1];
+D=[0 0;
+     0 0];
+
+sys=ss(A,B,C,D);
+x0=zeros(4,1);
+</pre><p>The manipulated variables are the elevator and flaperon angles, the attack and pitch angles are measured outputs to be regulated. The open-loop response of the system is unstable.</p><p>Both inputs are constrained between +/- 25 deg. The task is to get zero offset for piecewise-constant references, while avoiding instability due to input saturation. We also add constraints on the outputs to limit undershoots.</p><pre class="codeinput">clear <span class="string">MV</span> <span class="string">OV</span>
+MV(1)=struct(<span class="string">'Min'</span>,-25,<span class="string">'Max'</span>,25);
+MV(2)=struct(<span class="string">'Min'</span>,-25,<span class="string">'Max'</span>,25);
+OV(1)=struct(<span class="string">'Min'</span>,-0.5,<span class="string">'Max'</span>,0.5);
+OV(2)=struct(<span class="string">'Min'</span>,-100,<span class="string">'Max'</span>,100);
+Weights=struct(<span class="string">'Input'</span>,[0 0],<span class="string">'InputRate'</span>,[0 0],<span class="string">'Output'</span>,[10 10]);
+
+p=10;     <span class="comment">% Prediction horizon</span>
+moves=3;  <span class="comment">% Control horizon</span>
+
+mpcafti=mpc(sys,Ts,p,moves);
+mpcafti.Weights=Weights;
+mpcafti.MV=MV;
+mpcafti.OV=OV;
+</pre><pre class="codeoutput">--&gt;The "Weights.ManipulatedVariables" property of "mpc" object is empty. Assuming default 0.00000.
+--&gt;The "Weights.ManipulatedVariablesRate" property of "mpc" object is empty. Assuming default 0.10000.
+--&gt;The "Weights.OutputVariables" property of "mpc" object is empty. Assuming default 1.00000.
+</pre><h2>Simulation Using Simulink&reg;<a name="7"></a></h2><pre class="codeinput">open_system(<span class="string">'mpc_afti16'</span>)
+sim(<span class="string">'mpc_afti16'</span>,Tstop)
+</pre><pre class="codeoutput">--&gt;Converting model to discrete time.
+--&gt;Integrated white noise added on measured output channel #1.
+--&gt;Integrated white noise added on measured output channel #2.
+--&gt;MPC problem is constrained and "ManipulatedVariables.RateMin" is not completely specified or has infinite values.
+   Setting values to -10 to prevent numerical problems in QP.
+--&gt;The "Model.Noise" property of the "mpc" object is empty. Assuming white noise on each measured output channel.
+</pre><img vspace="5" hspace="5" src="afti16_01.png" alt=""> <img vspace="5" hspace="5" src="afti16_02.png" alt=""> <img vspace="5" hspace="5" src="afti16_03.png" alt=""> <pre class="codeinput">bdclose(<span class="string">'mpc_afti16'</span>)
+</pre><p class="footer">Copyright 1990-2009 The MathWorks, Inc.<br>
+          Published with MATLAB&reg; 7.10</p><p class="footer" id="trademarks">MATLAB and Simulink are registered trademarks of The MathWorks, Inc.  Please see <a href="http://www.mathworks.com/trademarks">www.mathworks.com/trademarks</a> for a list of other trademarks owned by The MathWorks, Inc.  Other product or brand names are trademarks or registered trademarks of their respective owners.</p></div><!--
+##### SOURCE BEGIN #####
+%% Constrained Multivariable (2x2) MPC Control of an AFTI-F16 Aircraft
+
+%%
+% This demonstration shows how to use Model Predictive Control Toolbox(TM)
+% to control a simplified model of the dynamics of an AFTI-F16 aircraft
+% with saturating actuators [1,2].  
+%
+% Reference:
+%
+% [1] P. Kapasouris, M. Athans and G. Stein, "Design of feedback control 
+% systems for unstable plants with saturating actuators", Proc. IFAC Symp. 
+% on Nonlinear Control System Design, Pergamon Press, pp.302REPLACE_WITH_DASH_DASH307, 1990
+%
+% [2] A. Bemporad, A. Casavola, and E. Mosca, "Nonlinear control of constrained 
+% linear systems via predictive reference management," IEEE(R) Trans. Automatic 
+% Control, vol. AC-42, no. 3, pp. 340-349, 1997.
+%
+% Copyright 1990-2009 The MathWorks, Inc.  
+% $Revision: 1.1.8.11 $  $Date: 2009/09/21 00:04:19 $   
+
+%% MPC Controller Setup
+if ~mpcchecktoolboxinstalled('simulink')
+    disp('Simulink(R) is required to run this demo.')
+    return
+end
+
+%%
+% The linearized open-loop dynamic model for the attack and pitch angles
+% as a function of the elevator and flaperon angles is: 
+Ts=.05;        %Sampling time
+Tstop=40*Ts;   %Simulation time
+
+A=[-.0151 -60.5651 0 -32.174;
+     -.0001 -1.3411 .9929 0;
+     .00018 43.2541 -.86939 0;
+      0      0       1      0];
+B=[-2.516 -13.136;
+     -.1689 -.2514;
+     -17.251 -1.5766;
+     0        0];
+C=[0 1 0 0;
+     0 0 0 1];
+D=[0 0;
+     0 0];
+  
+sys=ss(A,B,C,D);
+x0=zeros(4,1);
+
+%%
+% The manipulated variables are the elevator and flaperon angles,
+% the attack and pitch angles are measured outputs to be regulated. 
+% The open-loop response of the system is unstable.
+
+%%
+% Both inputs are constrained between +/- 25 deg. The task is to get 
+% zero offset for piecewise-constant references, while avoiding 
+% instability due to input saturation. We also add constraints on the
+% outputs to limit undershoots.
+
+%%
+clear MV OV
+MV(1)=struct('Min',-25,'Max',25);
+MV(2)=struct('Min',-25,'Max',25);
+OV(1)=struct('Min',-0.5,'Max',0.5);
+OV(2)=struct('Min',-100,'Max',100);
+Weights=struct('Input',[0 0],'InputRate',[0 0],'Output',[10 10]);
+
+p=10;     % Prediction horizon
+moves=3;  % Control horizon
+
+mpcafti=mpc(sys,Ts,p,moves);
+mpcafti.Weights=Weights;
+mpcafti.MV=MV;
+mpcafti.OV=OV;
+
+%% Simulation Using Simulink(R)
+open_system('mpc_afti16')
+sim('mpc_afti16',Tstop)
+
+%%
+bdclose('mpc_afti16')
+displayEndOfDemoMessage(mfilename)
+
+##### SOURCE END #####
+--></body></html>

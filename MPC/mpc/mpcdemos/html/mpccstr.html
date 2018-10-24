@@ -1,0 +1,505 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   <!--
+This HTML is auto-generated from an M-file.
+To make changes, update the M-file and republish this document.
+      --><title>MPC Control of a Chemical Reactor with Multiple Operating Conditions</title><meta name="generator" content="MATLAB 7.10"><meta name="date" content="2010-01-05"><meta name="m-file" content="mpccstr"><link rel="stylesheet" type="text/css" href="../../../matlab/demos/private/style.css"></head><body><div class="header"><div class="left"><a href="matlab:edit mpccstr">Open mpccstr.m in the Editor</a></div><div class="right"><a href="matlab:echodemo mpccstr">Run in the Command Window</a></div></div><div class="content"><h1>MPC Control of a Chemical Reactor with Multiple Operating Conditions</h1><!--introduction--><!--/introduction--><h2>Contents</h2><div><ul><li><a href="#2">Open-Loop Model: Linearize the Nonlinear CSTR Model</a></li><li><a href="#11">Define a MPC Controller</a></li><li><a href="#14">Test the Controller With a Step Disturbance in Feed Concentration</a></li><li><a href="#18">Modify Controller Design: Increase Estimator Signal-to-Noise</a></li><li><a href="#21">Test the Modified Controller for the Full Transition</a></li><li><a href="#26">Design Another Controller for the Final Operating Condition</a></li><li><a href="#32">Obtain a Third Controller for the Intermediate Operating Condition</a></li><li><a href="#37">Control the Plant With the Multiple MPC Controllers Block</a></li></ul></div><p>The objective is to control a chemical reactor (CSTR) as it transitions from an initial condition at low (~15%) conversion to a desired steady state at 80% conversion. The reaction is exothermic (liberates heat) and the CSTR temperature must be controlled to prevent a thermal runaway. Multiple MPC Controllers block is used to illustrate a scheduling based strategy to solve a nonlinear control problem with multiple operating conditions.</p><p>The reactor is modeled by 'CSTR_INOUT.mdl'.  For background, see Seborg, D.E. et al., "Process Dynamics and Control", 2nd Ed., 2004, Wiley, pp.34-36.</p><h2>Open-Loop Model: Linearize the Nonlinear CSTR Model<a name="2"></a></h2><pre class="codeinput"><span class="keyword">if</span> ~mpcchecktoolboxinstalled(<span class="string">'simulink'</span>)
+    disp(<span class="string">'Simulink(R) is required to run this demo.'</span>)
+    <span class="keyword">return</span>
+<span class="keyword">end</span>
+<span class="keyword">if</span> ~mpcchecktoolboxinstalled(<span class="string">'scd'</span>)
+    disp(<span class="string">'Simulink Control Design(R) is required to run this demo.'</span>)
+    <span class="keyword">return</span>
+<span class="keyword">end</span>
+</pre><p>We need a linear model to use in MPC.  The controller will adjust a coolant temperature, which is one of three plant inputs.  The others are the concentration of the limiting reactant in the CSTR feed stream and the temperature of this stream. The CSTR states are the temperature and concentration of the limiting reactant in the product stream.  We will assume that both can be measured and used for feedback control.  As a first attempt, linearize the CSTR model at the initial condition. Functions from Simulink Control Design such as "operspec", "findop", "linearize", are used to generate the linear state space model.</p><p>Create operating point specification.</p><pre class="codeinput">op = operspec(<span class="string">'CSTR_INOUT'</span>);
+<span class="comment">% Feed concentration is known for the initial condition.</span>
+op.Inputs(1).u = 10;
+op.Inputs(1).Known = true;
+<span class="comment">% Feed temperature is known for the initial condition.</span>
+op.Inputs(2).u = 298.2;
+op.Inputs(2).Known = true;
+<span class="comment">% Desired residual concentration is known for the initial condition.</span>
+op.Outputs(2).y = 8.57;
+op.Outputs(2).Known = true;
+<span class="comment">% Compute initial condition.</span>
+[op_point op_report] = findop(<span class="string">'CSTR_INOUT'</span>,op);
+<span class="comment">% Obtain nominal values of x, y and u.</span>
+x0 = [op_report.States(1).x;op_report.States(2).x];
+y0 = [op_report.Outputs(1).y;op_report.Outputs(2).y];
+u0 = [op_report.Inputs(1).u;op_report.Inputs(2).u;op_report.Inputs(3).u];
+</pre><pre class="codeoutput">
+ Operating Point Search Report:
+---------------------------------
+
+ Operating Report for the Model CSTR_INOUT.
+ (Time-Varying Components Evaluated at time t=0)
+
+Operating point specifications were successfully met. 
+
+States: 
+----------
+(1.) CSTR_INOUT/CSTR/Integrator
+      x:           311      dx:    -1.83e-012 (0)
+(2.) CSTR_INOUT/CSTR/Integrator1
+      x:          8.57      dx:    -8.88e-015 (0)
+ 
+Inputs: 
+----------
+(1.) CSTR_INOUT/Feed Concentration
+      u:            10
+(2.) CSTR_INOUT/Feed Temperature
+      u:           298
+(3.) CSTR_INOUT/Coolant Temperature
+      u:           298    [-Inf Inf]
+ 
+Outputs: 
+----------
+(1.) CSTR_INOUT/CSTR Temperature
+      y:           311    [-Inf Inf]
+(2.) CSTR_INOUT/Residual Concentration 
+      y:          8.57    (8.57)
+ 
+</pre><p>Obtain linear model at the initial condition.</p><pre class="codeinput">CSTR = linearize(<span class="string">'CSTR_INOUT'</span>, op_point);
+CSTR.InputName = {<span class="string">'C_f'</span>, <span class="string">'T_f'</span>, <span class="string">'T_c'</span>};
+CSTR.OutputName = {<span class="string">'T_r'</span>, <span class="string">'C_r'</span>};
+</pre><p>Verify that the linear model is open-loop stable at this condition.</p><pre class="codeinput">eig(CSTR)
+</pre><pre class="codeoutput">
+ans =
+
+   -0.5225
+   -0.8952
+
+</pre><p>All eigenvalues are negative so the plant is open-loop stable.</p><p>Designate the coolant temperature as the manipulated variable.</p><pre class="codeinput">CSTR.InputGroup.MV = 3;
+</pre><p>The other two inputs are unmeasured disturbances.</p><pre class="codeinput">CSTR.InputGroup.UD = [1, 2];
+</pre><p>Create the MPC model format and set the nominal conditions.</p><pre class="codeinput">Model.Plant = CSTR;
+Model.Nominal.X = x0;
+Model.Nominal.Y = y0;
+Model.Nominal.U = [0;0;u0(3)]; <span class="comment">% NOTE: nominal values for unmeasured disturbance must be zero.</span>
+</pre><h2>Define a MPC Controller<a name="11"></a></h2><pre class="codeinput">Ts = 1;     <span class="comment">% Sampling time (minutes)</span>
+MPC = mpc(Model, Ts);
+</pre><pre class="codeoutput">--&gt;The "PredictionHorizon" property of "mpc" object is empty. Trying PredictionHorizon = 10.
+--&gt;The "ControlHorizon" property of the "mpc" object is empty. Assuming 2.
+--&gt;The "Weights.ManipulatedVariables" property of "mpc" object is empty. Assuming default 0.00000.
+--&gt;The "Weights.ManipulatedVariablesRate" property of "mpc" object is empty. Assuming default 0.10000.
+--&gt;The "Weights.OutputVariables" property of "mpc" object is empty. Assuming default 1.00000.
+   for output(s) y1 and zero weight for output(s) y2 
+</pre><p>The goal will be to track a specified transition in the reactor concentration.  The reactor temperature will be measured and used in state estimation but the controller will not attempt to regulate it directly.  It will vary as needed to regulate the concentration.  Thus, set its MPC weight to zero.</p><pre class="codeinput">MPC.Weights.OV = [0 1];
+</pre><p>All other MPC parameters are at their default values.</p><h2>Test the Controller With a Step Disturbance in Feed Concentration<a name="14"></a></h2><p>'CSTR_MMPC_1.mdl' contains a Simulink&reg; model with CSTR and MPC Controller blocks in a feedback configuration.</p><pre class="codeinput">open_system(<span class="string">'CSTR_MMPC_1'</span>)
+</pre><img vspace="5" hspace="5" src="mpccstr_01.png" alt=""> <p>Define a constant setpoint for the output.</p><pre class="codeinput">CSTR_Setpoints.time = [0; 60];
+CSTR_Setpoints.signals.values = [y0 y0]';
+</pre><p>Test the response to a 5% increase in feed concentration.</p><pre class="codeinput">set_param(<span class="string">'CSTR_MMPC_1/Feed Concentration'</span>, <span class="string">'Value'</span>, <span class="string">'10.5'</span>);
+</pre><p>Set plot scales and simulate the response.</p><pre class="codeinput">set_param(<span class="string">'CSTR_MMPC_1/Measurements'</span>,<span class="string">'Open'</span>,<span class="string">'on'</span>)
+set_param(<span class="string">'CSTR_MMPC_1/Coolant Temperature'</span>,<span class="string">'Open'</span>,<span class="string">'on'</span>)
+set_param(<span class="string">'CSTR_MMPC_1/Measurements'</span>, <span class="string">'Ymin'</span>, <span class="string">'305~8'</span>, <span class="string">'Ymax'</span>, <span class="string">'320~9'</span>)
+set_param(<span class="string">'CSTR_MMPC_1/Coolant Temperature'</span>, <span class="string">'Ymin'</span>, <span class="string">'295'</span>, <span class="string">'Ymax'</span>, <span class="string">'305'</span>)
+sim(<span class="string">'CSTR_MMPC_1'</span>, 60)
+</pre><pre class="codeoutput">--&gt;Converting model to discrete time.
+--&gt;The "Model.Disturbance" property of "mpc" object is empty:
+   Assuming unmeasured input disturbance #1 is integrated white noise.
+   Assuming unmeasured input disturbance #2 is integrated white noise.
+--&gt;The "Model.Noise" property of the "mpc" object is empty. Assuming white noise on each measured output channel.
+</pre><img vspace="5" hspace="5" src="mpccstr_02.png" alt=""> <img vspace="5" hspace="5" src="mpccstr_03.png" alt=""> <h2>Modify Controller Design: Increase Estimator Signal-to-Noise<a name="18"></a></h2><p>The controller is stable but its disturbance rejection is sluggish. Try increasing the state estimator signal-to-noise by a factor of 10 and test the design again.</p><pre class="codeinput">D = ss(getindist(MPC));
+D.b = eye(2)*10;
+set(D,<span class="string">'InputName'</span>,[],<span class="string">'OutputName'</span>,[],<span class="string">'InputGroup'</span>,[],<span class="string">'OutputGroup'</span>,[]);
+setindist(MPC, <span class="string">'model'</span>, D);
+</pre><p>Simulate model.</p><pre class="codeinput">sim(<span class="string">'CSTR_MMPC_1'</span>, 60)
+</pre><pre class="codeoutput">--&gt;Converting model to discrete time.
+--&gt;The "Model.Noise" property of the "mpc" object is empty. Assuming white noise on each measured output channel.
+</pre><img vspace="5" hspace="5" src="mpccstr_04.png" alt=""> <img vspace="5" hspace="5" src="mpccstr_05.png" alt=""> <p>NOTE:  Plant inputs 1 and 2 are unmeasured disturbances. By default, the controller assumes integrated white noise with unit magnitude at these inputs when configuring the state estimator.  The above statements increase the white noise magnitudes to 10.</p><h2>Test the Modified Controller for the Full Transition<a name="21"></a></h2><p>Define the desired setpoint transition.  After a 10-minute warm-up period, ramp the concentration setpoint downward at a rate of 0.25 per minute until it reaches 2.0 kmol/m^3.</p><pre class="codeinput">CSTR_Setpoints.time = [0 10 11:39]';
+CSTR_Setpoints.signals.values = [y0(1)*ones(31,1),[y0(2);y0(2);(y0(2):-0.25:2)';2;2]];
+</pre><p>The MPC Controller block is configured to use these setpoints in a look-ahead mode, i.e., anticipating the setpoint transition.  This generally improves setpoint tracking.</p><pre class="codeinput">open_system(<span class="string">'CSTR_MMPC_1/MPC Controller'</span>)
+</pre><img vspace="5" hspace="5" src="mpccstr_06.png" alt=""> <p>Remove the 5% increase in feed concentration.</p><pre class="codeinput">set_param(<span class="string">'CSTR_MMPC_1/Feed Concentration'</span>, <span class="string">'Value'</span>, <span class="string">'10'</span>)
+</pre><p>Set plot scales and simulate the response.</p><pre class="codeinput">set_param(<span class="string">'CSTR_MMPC_1/Measurements'</span>, <span class="string">'Ymin'</span>, <span class="string">'300~0'</span>, <span class="string">'Ymax'</span>, <span class="string">'400~10'</span>)
+set_param(<span class="string">'CSTR_MMPC_1/Coolant Temperature'</span>, <span class="string">'Ymin'</span>, <span class="string">'240'</span>, <span class="string">'Ymax'</span>, <span class="string">'360'</span>)
+</pre><p>Simulate model.</p><pre class="codeinput">sim(<span class="string">'CSTR_MMPC_1'</span>, 60)
+</pre><img vspace="5" hspace="5" src="mpccstr_07.png" alt=""> <img vspace="5" hspace="5" src="mpccstr_08.png" alt=""> <h2>Design Another Controller for the Final Operating Condition<a name="26"></a></h2><p>Performance along the full transition could be improved if another model were used.  An obvious candidate would be one representing the desired final state.  Obtain this by linearization as before and design a controller identical to the previous except for the prediction model.</p><p>Determine steady state conditions when CSTR concentration is 2 kmol/m^3.</p><pre class="codeinput">op.Outputs(2).y = 2;
+[op_point op_report] = findop(<span class="string">'CSTR_INOUT'</span>,op);
+<span class="comment">% Obtain nominal values of x, y and u.</span>
+x0 = [op_report.States(1).x;op_report.States(2).x];
+y0 = [op_report.Outputs(1).y;op_report.Outputs(2).y];
+u0 = [op_report.Inputs(1).u;op_report.Inputs(2).u;op_report.Inputs(3).u];
+</pre><pre class="codeoutput">
+ Operating Point Search Report:
+---------------------------------
+
+ Operating Report for the Model CSTR_INOUT.
+ (Time-Varying Components Evaluated at time t=0)
+
+Operating point specifications were successfully met. 
+
+States: 
+----------
+(1.) CSTR_INOUT/CSTR/Integrator
+      x:           373      dx:     5.46e-011 (0)
+(2.) CSTR_INOUT/CSTR/Integrator1
+      x:             2      dx:     -4.6e-012 (0)
+ 
+Inputs: 
+----------
+(1.) CSTR_INOUT/Feed Concentration
+      u:            10
+(2.) CSTR_INOUT/Feed Temperature
+      u:           298
+(3.) CSTR_INOUT/Coolant Temperature
+      u:           305    [-Inf Inf]
+ 
+Outputs: 
+----------
+(1.) CSTR_INOUT/CSTR Temperature
+      y:           373    [-Inf Inf]
+(2.) CSTR_INOUT/Residual Concentration 
+      y:             2    (2)
+ 
+</pre><p>Linearize at this condition.</p><pre class="codeinput">CSTR = linearize(<span class="string">'CSTR_INOUT'</span>, op_point);
+CSTR.InputName = {<span class="string">'C_f'</span>, <span class="string">'T_f'</span>, <span class="string">'T_c'</span>};
+CSTR.OutputName = {<span class="string">'T_r'</span>, <span class="string">'C_r'</span>};
+</pre><p>Check stability.</p><pre class="codeinput">eig(CSTR)
+</pre><pre class="codeoutput">
+ans =
+
+  -1.1077 + 1.0901i
+  -1.1077 - 1.0901i
+
+</pre><p>The model is again open-loop stable.</p><p>Form the new controller.</p><pre class="codeinput">CSTR.InputGroup.MV = 3;
+CSTR.InputGroup.UD = [1, 2];
+MPC2 = MPC;
+MPC2.Model.Plant = CSTR;
+Model.Nominal.X = x0;
+Model.Nominal.Y = y0;
+Model.Nominal.U = [0;0;u0(3)]; <span class="comment">% NOTE: nominal values for unmeasured disturbance must be zero.</span>
+</pre><p>Change the controller and re-run the simulation.</p><pre class="codeinput">set_param(<span class="string">'CSTR_MMPC_1/MPC Controller'</span>, <span class="string">'mpcobj'</span>, <span class="string">'MPC2'</span>)
+set_param(<span class="string">'CSTR_MMPC_1/Measurements'</span>, <span class="string">'Ymin'</span>, <span class="string">'300~0'</span>, <span class="string">'Ymax'</span>, <span class="string">'420~10'</span>);
+sim(<span class="string">'CSTR_MMPC_1'</span>, 60)
+</pre><pre class="codeoutput">--&gt;Converting model to discrete time.
+--&gt;The "Model.Noise" property of the "mpc" object is empty. Assuming white noise on each measured output channel.
+</pre><img vspace="5" hspace="5" src="mpccstr_09.png" alt=""> <img vspace="5" hspace="5" src="mpccstr_10.png" alt=""> <p>Close model.</p><pre class="codeinput">bdclose(<span class="string">'CSTR_MMPC_1'</span>)
+</pre><h2>Obtain a Third Controller for the Intermediate Operating Condition<a name="32"></a></h2><p>Performance did not improve significantly.  Now define a model representing an intermediate CSTR concentration (5.5 kmol/m^3).</p><pre class="codeinput">op.Outputs(2).y = 5.5;
+[op_point op_report] = findop(<span class="string">'CSTR_INOUT'</span>,op);
+<span class="comment">% Obtain nominal values of x, y and u.</span>
+x0 = [op_report.States(1).x;op_report.States(2).x];
+y0 = [op_report.Outputs(1).y;op_report.Outputs(2).y];
+u0 = [op_report.Inputs(1).u;op_report.Inputs(2).u;op_report.Inputs(3).u];
+</pre><pre class="codeoutput">
+ Operating Point Search Report:
+---------------------------------
+
+ Operating Report for the Model CSTR_INOUT.
+ (Time-Varying Components Evaluated at time t=0)
+
+Operating point specifications were successfully met. 
+
+States: 
+----------
+(1.) CSTR_INOUT/CSTR/Integrator
+      x:           339      dx:     3.41e-008 (0)
+(2.) CSTR_INOUT/CSTR/Integrator1
+      x:           5.5      dx:    -2.86e-009 (0)
+ 
+Inputs: 
+----------
+(1.) CSTR_INOUT/Feed Concentration
+      u:            10
+(2.) CSTR_INOUT/Feed Temperature
+      u:           298
+(3.) CSTR_INOUT/Coolant Temperature
+      u:           298    [-Inf Inf]
+ 
+Outputs: 
+----------
+(1.) CSTR_INOUT/CSTR Temperature
+      y:           339    [-Inf Inf]
+(2.) CSTR_INOUT/Residual Concentration 
+      y:           5.5    (5.5)
+ 
+</pre><p>Linearize at this condition.</p><pre class="codeinput">CSTR = linearize(<span class="string">'CSTR_INOUT'</span>, op_point);
+CSTR.InputName = {<span class="string">'C_f'</span>, <span class="string">'T_f'</span>, <span class="string">'T_c'</span>};
+CSTR.OutputName = {<span class="string">'T_r'</span>, <span class="string">'C_r'</span>};
+</pre><p>Check stability.</p><pre class="codeinput">eig(CSTR)
+</pre><pre class="codeoutput">
+ans =
+
+    0.4941
+   -0.8357
+
+</pre><p>The model is again open-loop stable.</p><p>Form the new controller.</p><pre class="codeinput">CSTR.InputGroup.MV = 3;
+CSTR.InputGroup.UD = [1, 2];
+MPC5 = MPC;
+MPC5.Model.Plant = CSTR;
+Model.Nominal.X = x0;
+Model.Nominal.Y = y0;
+Model.Nominal.U = [0;0;u0(3)]; <span class="comment">% NOTE: nominal values for unmeasured disturbance must be zero.</span>
+</pre><p>NOTE:  As the plant is unstable it's important that the disturbance model include an unmeasured disturbance input. This allows the Kalman estimator to be stable.</p><h2>Control the Plant With the Multiple MPC Controllers Block<a name="37"></a></h2><p>The following model uses the Multiple MPC Controllers block instead of the MPC Controller block to implement three MPC controllers across the operating range.</p><pre class="codeinput">open_system(<span class="string">'CSTR_MMPC_3'</span>)
+</pre><img vspace="5" hspace="5" src="mpccstr_11.png" alt=""> <p>Note that it has been configured to use the three controllers in a sequence:  MPC/MPC5/MPC2.</p><pre class="codeinput">open_system(<span class="string">'CSTR_MMPC_3/Multiple MPC Controllers'</span>)
+</pre><img vspace="5" hspace="5" src="mpccstr_12.png" alt=""> <p>Note also that the two switches specify when to switch from one controller to another.  The rules are: If CSTR concentration &gt;= 8, use MPC If 3 &lt;= CSTR concentration &lt; 8, use MPC5 If CSTR concentration &lt; 3, use MPC2</p><p>Simulate with the Multiple MPC Controllers block</p><pre class="codeinput">set_param(<span class="string">'CSTR_MMPC_3/Measurements'</span>,<span class="string">'Open'</span>,<span class="string">'on'</span>);
+set_param(<span class="string">'CSTR_MMPC_3/MV'</span>,<span class="string">'Open'</span>,<span class="string">'on'</span>);
+sim(<span class="string">'CSTR_MMPC_3'</span>, 60)
+</pre><pre class="codeoutput">--&gt;Converting model to discrete time.
+--&gt;The "Model.Noise" property of the "mpc" object is empty. Assuming white noise on each measured output channel.
+</pre><img vspace="5" hspace="5" src="mpccstr_13.png" alt=""> <img vspace="5" hspace="5" src="mpccstr_14.png" alt=""> <p>The transition is now well controlled.  The major improvement is in the transition through the OL-unstable region.  The plot of the switching signal shows when controller transitions occur.  The MV character changes at these times because of the change in dynamic characteristics introduced by the new prediction model.</p><pre class="codeinput">bdclose(<span class="string">'CSTR_MMPC_3'</span>)
+</pre><p class="footer">Copyright 1990-2009 The MathWorks, Inc.<br>
+          Published with MATLAB&reg; 7.10</p><p class="footer" id="trademarks">MATLAB and Simulink are registered trademarks of The MathWorks, Inc.  Please see <a href="http://www.mathworks.com/trademarks">www.mathworks.com/trademarks</a> for a list of other trademarks owned by The MathWorks, Inc.  Other product or brand names are trademarks or registered trademarks of their respective owners.</p></div><!--
+##### SOURCE BEGIN #####
+%% MPC Control of a Chemical Reactor with Multiple Operating Conditions
+
+%%
+% The objective is to control a chemical reactor (CSTR) as it transitions
+% from an initial condition at low (~15%) conversion to a desired steady
+% state at 80% conversion. The reaction is exothermic (liberates heat) and
+% the CSTR temperature must be controlled to prevent a thermal runaway.
+% Multiple MPC Controllers block is used to illustrate a scheduling based
+% strategy to solve a nonlinear control problem with multiple operating
+% conditions.
+%
+% The reactor is modeled by 'CSTR_INOUT.mdl'.  For background, see Seborg,
+% D.E. et al., "Process Dynamics and Control", 2nd Ed., 2004, Wiley,
+% pp.34-36. 
+%
+% Copyright 1990-2009 The MathWorks, Inc.
+% $Revision: 1.1.8.4 $  $Date: 2009/11/09 16:28:16 $   
+%
+
+%% Open-Loop Model: Linearize the Nonlinear CSTR Model
+if ~mpcchecktoolboxinstalled('simulink')
+    disp('Simulink(R) is required to run this demo.')
+    return
+end
+if ~mpcchecktoolboxinstalled('scd')
+    disp('Simulink Control Design(R) is required to run this demo.')
+    return
+end
+
+%%
+% We need a linear model to use in MPC.  The controller will adjust a
+% coolant temperature, which is one of three plant inputs.  The others are
+% the concentration of the limiting reactant in the CSTR feed stream and
+% the temperature of this stream. The CSTR states are the temperature and
+% concentration of the limiting reactant in the product stream.  We will
+% assume that both can be measured and used for feedback control.  As a
+% first attempt, linearize the CSTR model at the initial condition.
+% Functions from Simulink Control Design such as "operspec", "findop",
+% "linearize", are used to generate the linear state space model.
+%
+%%
+% Create operating point specification.
+op = operspec('CSTR_INOUT');
+% Feed concentration is known for the initial condition.
+op.Inputs(1).u = 10;
+op.Inputs(1).Known = true;
+% Feed temperature is known for the initial condition.
+op.Inputs(2).u = 298.2;
+op.Inputs(2).Known = true;
+% Desired residual concentration is known for the initial condition.
+op.Outputs(2).y = 8.57;
+op.Outputs(2).Known = true;
+% Compute initial condition.
+[op_point op_report] = findop('CSTR_INOUT',op); 
+% Obtain nominal values of x, y and u.
+x0 = [op_report.States(1).x;op_report.States(2).x];
+y0 = [op_report.Outputs(1).y;op_report.Outputs(2).y];
+u0 = [op_report.Inputs(1).u;op_report.Inputs(2).u;op_report.Inputs(3).u];  
+%%
+% Obtain linear model at the initial condition.
+CSTR = linearize('CSTR_INOUT', op_point); 
+CSTR.InputName = {'C_f', 'T_f', 'T_c'};
+CSTR.OutputName = {'T_r', 'C_r'};
+%%
+% Verify that the linear model is open-loop stable at this condition.
+eig(CSTR)
+%%
+% All eigenvalues are negative so the plant is open-loop stable.
+%
+%%
+% Designate the coolant temperature as the manipulated variable.
+CSTR.InputGroup.MV = 3;     
+%%
+% The other two inputs are unmeasured disturbances.
+CSTR.InputGroup.UD = [1, 2];
+%%
+% Create the MPC model format and set the nominal conditions.
+Model.Plant = CSTR;
+Model.Nominal.X = x0;
+Model.Nominal.Y = y0;
+Model.Nominal.U = [0;0;u0(3)]; % NOTE: nominal values for unmeasured disturbance must be zero.
+
+%% Define a MPC Controller
+Ts = 1;     % Sampling time (minutes)
+MPC = mpc(Model, Ts);
+%%
+% The goal will be to track a specified transition in the reactor
+% concentration.  The reactor temperature will be measured and used in
+% state estimation but the controller will not attempt to regulate it
+% directly.  It will vary as needed to regulate the concentration.  Thus,
+% set its MPC weight to zero. 
+MPC.Weights.OV = [0 1];
+%%
+% All other MPC parameters are at their default values. 
+
+%% Test the Controller With a Step Disturbance in Feed Concentration 
+% 'CSTR_MMPC_1.mdl' contains a Simulink(R) model with CSTR and MPC
+% Controller blocks in a feedback configuration. 
+open_system('CSTR_MMPC_1')
+%%
+% Define a constant setpoint for the output.
+CSTR_Setpoints.time = [0; 60];
+CSTR_Setpoints.signals.values = [y0 y0]';
+%%
+% Test the response to a 5% increase in feed concentration.
+set_param('CSTR_MMPC_1/Feed Concentration', 'Value', '10.5');
+%%
+% Set plot scales and simulate the response.
+set_param('CSTR_MMPC_1/Measurements','Open','on')
+set_param('CSTR_MMPC_1/Coolant Temperature','Open','on')
+set_param('CSTR_MMPC_1/Measurements', 'Ymin', '305~8', 'Ymax', '320~9')
+set_param('CSTR_MMPC_1/Coolant Temperature', 'Ymin', '295', 'Ymax', '305')
+sim('CSTR_MMPC_1', 60)
+
+%% Modify Controller Design: Increase Estimator Signal-to-Noise
+% The controller is stable but its disturbance rejection is sluggish. Try
+% increasing the state estimator signal-to-noise by a factor of 10 and test
+% the design again. 
+D = ss(getindist(MPC));
+D.b = eye(2)*10;
+set(D,'InputName',[],'OutputName',[],'InputGroup',[],'OutputGroup',[]);
+setindist(MPC, 'model', D);
+%%
+% Simulate model.
+sim('CSTR_MMPC_1', 60)
+%%
+% NOTE:  Plant inputs 1 and 2 are unmeasured disturbances. By default, 
+% the controller assumes integrated white noise with unit magnitude at 
+% these inputs when configuring the state estimator.  The above statements
+% increase the white noise magnitudes to 10.
+
+%% Test the Modified Controller for the Full Transition
+% Define the desired setpoint transition.  After a 10-minute warm-up
+% period, ramp the concentration setpoint downward at a rate of 0.25 per
+% minute until it reaches 2.0 kmol/m^3.
+CSTR_Setpoints.time = [0 10 11:39]';
+CSTR_Setpoints.signals.values = [y0(1)*ones(31,1),[y0(2);y0(2);(y0(2):-0.25:2)';2;2]];
+%%
+% The MPC Controller block is configured to use these setpoints in a
+% look-ahead mode, i.e., anticipating the setpoint transition.  This
+% generally improves setpoint tracking.
+open_system('CSTR_MMPC_1/MPC Controller')
+%%
+% Remove the 5% increase in feed concentration.
+set_param('CSTR_MMPC_1/Feed Concentration', 'Value', '10')
+%%
+% Set plot scales and simulate the response.
+set_param('CSTR_MMPC_1/Measurements', 'Ymin', '300~0', 'Ymax', '400~10')
+set_param('CSTR_MMPC_1/Coolant Temperature', 'Ymin', '240', 'Ymax', '360')
+%%
+% Simulate model.
+sim('CSTR_MMPC_1', 60)
+
+%% Design Another Controller for the Final Operating Condition
+% Performance along the full transition could be improved if another model
+% were used.  An obvious candidate would be one representing the desired
+% final state.  Obtain this by linearization as before and design a
+% controller identical to the previous except for the prediction model.
+%
+% Determine steady state conditions when CSTR concentration is 2 kmol/m^3.
+op.Outputs(2).y = 2;
+[op_point op_report] = findop('CSTR_INOUT',op); 
+% Obtain nominal values of x, y and u.
+x0 = [op_report.States(1).x;op_report.States(2).x];
+y0 = [op_report.Outputs(1).y;op_report.Outputs(2).y];
+u0 = [op_report.Inputs(1).u;op_report.Inputs(2).u;op_report.Inputs(3).u];  
+%%
+% Linearize at this condition.
+CSTR = linearize('CSTR_INOUT', op_point); 
+CSTR.InputName = {'C_f', 'T_f', 'T_c'};
+CSTR.OutputName = {'T_r', 'C_r'};
+%%
+% Check stability.
+eig(CSTR)
+%%
+% The model is again open-loop stable.  
+%
+% Form the new controller.
+CSTR.InputGroup.MV = 3;     
+CSTR.InputGroup.UD = [1, 2];
+MPC2 = MPC;
+MPC2.Model.Plant = CSTR;
+Model.Nominal.X = x0;
+Model.Nominal.Y = y0;
+Model.Nominal.U = [0;0;u0(3)]; % NOTE: nominal values for unmeasured disturbance must be zero.
+%%
+% Change the controller and re-run the simulation.
+set_param('CSTR_MMPC_1/MPC Controller', 'mpcobj', 'MPC2')
+set_param('CSTR_MMPC_1/Measurements', 'Ymin', '300~0', 'Ymax', '420~10');
+sim('CSTR_MMPC_1', 60)
+%%
+% Close model.
+bdclose('CSTR_MMPC_1')
+
+%% Obtain a Third Controller for the Intermediate Operating Condition
+% Performance did not improve significantly.  Now define a model
+% representing an intermediate CSTR concentration (5.5 kmol/m^3).
+op.Outputs(2).y = 5.5;
+[op_point op_report] = findop('CSTR_INOUT',op); 
+% Obtain nominal values of x, y and u.
+x0 = [op_report.States(1).x;op_report.States(2).x];
+y0 = [op_report.Outputs(1).y;op_report.Outputs(2).y];
+u0 = [op_report.Inputs(1).u;op_report.Inputs(2).u;op_report.Inputs(3).u];  
+%%
+% Linearize at this condition.
+CSTR = linearize('CSTR_INOUT', op_point); 
+CSTR.InputName = {'C_f', 'T_f', 'T_c'};
+CSTR.OutputName = {'T_r', 'C_r'};
+%%
+% Check stability.
+eig(CSTR)
+%%
+% The model is again open-loop stable.  
+%
+% Form the new controller.
+CSTR.InputGroup.MV = 3;     
+CSTR.InputGroup.UD = [1, 2];
+MPC5 = MPC;
+MPC5.Model.Plant = CSTR;
+Model.Nominal.X = x0;
+Model.Nominal.Y = y0;
+Model.Nominal.U = [0;0;u0(3)]; % NOTE: nominal values for unmeasured disturbance must be zero.
+%%
+% NOTE:  As the plant is unstable it's important that the disturbance model
+% include an unmeasured disturbance input. This allows the Kalman estimator
+% to be stable.
+
+%% Control the Plant With the Multiple MPC Controllers Block
+% The following model uses the Multiple MPC Controllers block instead of
+% the MPC Controller block to implement three MPC controllers across the
+% operating range. 
+open_system('CSTR_MMPC_3')
+%%
+% Note that it has been configured to use the three controllers in a
+% sequence:  MPC/MPC5/MPC2.
+open_system('CSTR_MMPC_3/Multiple MPC Controllers')
+%%
+% Note also that the two switches specify when to switch from one
+% controller to another.  The rules are:
+% If CSTR concentration >= 8, use MPC
+% If 3 <= CSTR concentration < 8, use MPC5
+% If CSTR concentration < 3, use MPC2
+%%
+% Simulate with the Multiple MPC Controllers block
+set_param('CSTR_MMPC_3/Measurements','Open','on');
+set_param('CSTR_MMPC_3/MV','Open','on');
+sim('CSTR_MMPC_3', 60)
+%%
+% The transition is now well controlled.  The major improvement is in the
+% transition through the OL-unstable region.  The plot of the switching
+% signal shows when controller transitions occur.  The MV character changes
+% at these times because of the change in dynamic characteristics
+% introduced by the new prediction model. 
+%
+%%
+bdclose('CSTR_MMPC_3')
+displayEndOfDemoMessage(mfilename)
+
+
+##### SOURCE END #####
+--></body></html>

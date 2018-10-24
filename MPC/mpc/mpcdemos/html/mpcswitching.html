@@ -1,0 +1,240 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   <!--
+This HTML is auto-generated from an M-file.
+To make changes, update the M-file and republish this document.
+      --><title>Switching MPC Controllers with Multiple MPC Controllers Block</title><meta name="generator" content="MATLAB 7.10"><meta name="date" content="2010-01-05"><meta name="m-file" content="mpcswitching"><link rel="stylesheet" type="text/css" href="../../../matlab/demos/private/style.css"></head><body><div class="header"><div class="left"><a href="matlab:edit mpcswitching">Open mpcswitching.m in the Editor</a></div><div class="right"><a href="matlab:echodemo mpcswitching">Run in the Command Window</a></div></div><div class="content"><h1>Switching MPC Controllers with Multiple MPC Controllers Block</h1><!--introduction--><!--/introduction--><h2>Contents</h2><div><ul><li><a href="#2">System Description</a></li><li><a href="#3">Model Parameters</a></li><li><a href="#4">State Space Models</a></li><li><a href="#6">Multi-MPC Control Setup</a></li><li><a href="#11">Simulation with Multiple MPC Controllers Block</a></li><li><a href="#15">Repeat Simulation Using MPC1 Only (Assumes Masses Never in Contact)</a></li><li><a href="#17">Repeat Simulation Using MPC2 Only (Assumes Masses Always in Contact)</a></li></ul></div><p>This demonstration shows how to use an Multiple MPC Controllers block in a multi-controller set-up to achieve a simple nonlinear control scheme.</p><p>Author: A. Bemporad</p><h2>System Description<a name="2"></a></h2><p>The system is composed by two masses M1 and M2 connected to two springs k1 and k2 respectively. The collision is assumed completely inelastic. Mass M1 is pulled by a force F, which is the manipulated variable. The objective is to make mass M1's position y1 track a given reference r.</p><p>The dynamics are twofold: when the masses are detached, M1 moves freely. Otherwise, M1+M2 move together. We assume that only M1 position and a contact sensor are available for feedback. The latter is used to trigger switching the MPC controllers. Note that position and velocity of mass M2 are not controllable.</p><pre>                         /-----\     k1                 ||
+                  F &lt;--- | M1  |----/\/\/\-------------[|| wall
+    ||                   | |---/                        ||
+    ||     k2            \-/      /----\                ||
+wall||]--/\/\/\-------------------| M2 |                ||
+    ||                            \----/                ||
+    ||                                                  ||
+----yeq2------------------ y1 ------ y2 ----------------yeq1----&gt; y axis</pre><p>The model is a simplified version of the model proposed in the following reference:</p><p>A. Bemporad, S. Di Cairano, I. V. Kolmanovsky, and D. Hrovat, "Hybrid modeling and control of a multibody magnetic actuator for automotive applications," in Proc. 46th IEEE&reg; Conf. on Decision and Control, New Orleans, LA, 2007.</p><h2>Model Parameters<a name="3"></a></h2><pre class="codeinput">M1=1;       <span class="comment">% mass</span>
+M2=5;       <span class="comment">% mass</span>
+k1=1;       <span class="comment">% spring constant</span>
+k2=0.1;     <span class="comment">% spring constant</span>
+b1=0.3;     <span class="comment">% friction coefficient</span>
+b2=0.8;     <span class="comment">% friction coefficient</span>
+yeq1=10;    <span class="comment">% wall mount position</span>
+yeq2=-10;   <span class="comment">% wall mount position</span>
+</pre><h2>State Space Models<a name="4"></a></h2><p>states: position and velocity of mass M1; manipulated variable: pull force F measured disturbance: a constant value of 1 which provides calibrates spring force to the right value measured output: position of mass M1</p><p>State-space model of M1 when masses are not in contact.</p><pre class="codeinput">A1=[0 1;-k1/M1 -b1/M1];
+B1=[0 0;-1/M1 k1*yeq1/M1];
+C1=[1 0];
+D1=[0 0];
+sys1=ss(A1,B1,C1,D1);
+sys1=setmpcsignals(sys1,<span class="string">'MD'</span>,2);
+</pre><pre class="codeoutput">--&gt;Assuming unspecified input signals are manipulated variables.
+</pre><p>State-space model when the two masses are in contact.</p><pre class="codeinput">A2=[0 1;-(k1+k2)/(M1+M2) -(b1+b2)/(M1+M2)];
+B2=[0 0;-1/(M1+M2) (k1*yeq1+k2*yeq2)/(M1+M2)];
+C2=[1 0];
+D2=[0 0];
+sys2=ss(A2,B2,C2,D2);
+sys2=setmpcsignals(sys2,<span class="string">'MD'</span>,2);
+</pre><pre class="codeoutput">--&gt;Assuming unspecified input signals are manipulated variables.
+</pre><h2>Multi-MPC Control Setup<a name="6"></a></h2><pre class="codeinput">Ts=0.2;     <span class="comment">% sampling time</span>
+p=20;       <span class="comment">% prediction horizon</span>
+m=1;        <span class="comment">% control horizon</span>
+</pre><p>Define MPC object for mass M1 detached from M2.</p><pre class="codeinput">MPC1=mpc(sys1,Ts,p,m);
+MPC1.Weights.OV=1;
+</pre><pre class="codeoutput">--&gt;The "Weights.ManipulatedVariables" property of "mpc" object is empty. Assuming default 0.00000.
+--&gt;The "Weights.ManipulatedVariablesRate" property of "mpc" object is empty. Assuming default 0.10000.
+--&gt;The "Weights.OutputVariables" property of "mpc" object is empty. Assuming default 1.00000.
+</pre><p>Define constraints on the manipulated variable.</p><pre class="codeinput">MPC1.MV=struct(<span class="string">'Min'</span>,0,<span class="string">'Max'</span>,Inf,<span class="string">'RateMin'</span>,-1e3,<span class="string">'RateMax'</span>,1e3);
+</pre><p>Define MPC object for mass M1 and M2 stuck together.</p><pre class="codeinput">MPC2=mpc(sys2,Ts,p,m);
+MPC2.Weights.OV=1;
+</pre><pre class="codeoutput">--&gt;The "Weights.ManipulatedVariables" property of "mpc" object is empty. Assuming default 0.00000.
+--&gt;The "Weights.ManipulatedVariablesRate" property of "mpc" object is empty. Assuming default 0.10000.
+--&gt;The "Weights.OutputVariables" property of "mpc" object is empty. Assuming default 1.00000.
+</pre><p>Define constraints on the manipulated variable.</p><pre class="codeinput">MPC2.MV=MPC1.MV;
+</pre><h2>Simulation with Multiple MPC Controllers Block<a name="11"></a></h2><pre class="codeinput"><span class="keyword">if</span> ~mpcchecktoolboxinstalled(<span class="string">'simulink'</span>)
+    disp(<span class="string">'Simulink(R) is required to run this demo.'</span>)
+    <span class="keyword">return</span>
+<span class="keyword">end</span>
+</pre><p>Simulate with Multiple MPC Controllers block.</p><pre class="codeinput">Tstop=100;      <span class="comment">% Simulation time</span>
+y1initial=0;    <span class="comment">% Initial positions</span>
+y2initial=10;
+open_system(<span class="string">'mpc_switching'</span>);
+<span class="keyword">if</span> exist(<span class="string">'animationmpc_switchoff'</span>,<span class="string">'var'</span>) &amp;&amp; animationmpc_switchoff
+    set_param(<span class="string">'mpc_switching/Animation'</span>,<span class="string">'OFF'</span>,<span class="string">'true'</span>);
+    clear <span class="string">animationmpc_switchoff</span>
+<span class="keyword">end</span>
+</pre><img vspace="5" hspace="5" src="mpcswitching_01.png" alt=""> <pre class="codeinput">disp(<span class="string">'Start simulation by switching control between MPC1 and MPC2 ...'</span>);
+set_param(<span class="string">'mpc_switching/signals'</span>,<span class="string">'Open'</span>,<span class="string">'On'</span>);
+sim(<span class="string">'mpc_switching'</span>,Tstop);
+</pre><pre class="codeoutput">Start simulation by switching control between MPC1 and MPC2 ...
+--&gt;Converting model to discrete time.
+--&gt;Integrated white noise added on measured output channel #1.
+--&gt;The "Model.Noise" property of the "mpc" object is empty. Assuming white noise on each measured output channel.
+--&gt;Converting model to discrete time.
+--&gt;Integrated white noise added on measured output channel #1.
+--&gt;The "Model.Noise" property of the "mpc" object is empty. Assuming white noise on each measured output channel.
+</pre><img vspace="5" hspace="5" src="mpcswitching_02.png" alt=""> <img vspace="5" hspace="5" src="mpcswitching_03.png" alt=""> <p>Use of two controllers provides good performance under all conditions.</p><h2>Repeat Simulation Using MPC1 Only (Assumes Masses Never in Contact)<a name="15"></a></h2><pre class="codeinput">disp(<span class="string">'Now repeat simulation by using only MPC1 ...'</span>);
+disp(<span class="string">'When two masses stick together, control performance deteriorates.'</span>);
+MPC2save=MPC2;
+MPC2=MPC1;
+sim(<span class="string">'mpc_switching'</span>,Tstop);
+</pre><pre class="codeoutput">Now repeat simulation by using only MPC1 ...
+When two masses stick together, control performance deteriorates.
+</pre><img vspace="5" hspace="5" src="mpcswitching_04.png" alt=""> <img vspace="5" hspace="5" src="mpcswitching_05.png" alt=""> <p>In this case, performance degrades whenever the two masses join.</p><h2>Repeat Simulation Using MPC2 Only (Assumes Masses Always in Contact)<a name="17"></a></h2><pre class="codeinput">disp(<span class="string">'Now repeat simulation by using only MPC2 ...'</span>);
+disp(<span class="string">'When two masses are detached, control performance deteriorates.'</span>);
+MPC1=MPC2save;
+MPC2=MPC1;
+sim(<span class="string">'mpc_switching'</span>,Tstop);
+</pre><pre class="codeoutput">Now repeat simulation by using only MPC2 ...
+When two masses are detached, control performance deteriorates.
+</pre><img vspace="5" hspace="5" src="mpcswitching_06.png" alt=""> <img vspace="5" hspace="5" src="mpcswitching_07.png" alt=""> <p>In this case, performance degrades when the masses separate, causing the controller to apply excessive force.</p><pre class="codeinput">bdclose(<span class="string">'mpc_switching'</span>)
+close(findobj(<span class="string">'Tag'</span>,<span class="string">'mpc_switching_demo'</span>))
+</pre><p class="footer">Copyright 1990-2009 The MathWorks, Inc.<br>
+          Published with MATLAB&reg; 7.10</p><p class="footer" id="trademarks">MATLAB and Simulink are registered trademarks of The MathWorks, Inc.  Please see <a href="http://www.mathworks.com/trademarks">www.mathworks.com/trademarks</a> for a list of other trademarks owned by The MathWorks, Inc.  Other product or brand names are trademarks or registered trademarks of their respective owners.</p></div><!--
+##### SOURCE BEGIN #####
+%% Switching MPC Controllers with Multiple MPC Controllers Block
+
+%%
+% This demonstration shows how to use an Multiple MPC Controllers block in
+% a multi-controller set-up to achieve a simple nonlinear control scheme.  
+%
+% Author: A. Bemporad
+% Copyright 1990-2009 The MathWorks, Inc.  
+% $Revision: 1.1.10.4 $ 
+
+%% System Description
+% The system is composed by two masses M1 and M2 connected to two springs
+% k1 and k2 respectively. The collision is assumed completely inelastic.
+% Mass M1 is pulled by a force F, which is the manipulated variable. The
+% objective is to make mass M1's position y1 track a given reference r. 
+% 
+% The dynamics are twofold: when the masses are detached, M1 moves freely.
+% Otherwise, M1+M2 move together. We assume that only M1 position and a
+% contact sensor are available for feedback. The latter is used to trigger
+% switching the MPC controllers. Note that position and velocity of mass M2
+% are not controllable.   
+%
+%
+%                           /REPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASH-\     k1                 ||
+%                    F <REPLACE_WITH_DASH_DASH- | M1  |REPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASH/\/\/\REPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASH-[|| wall
+%      ||                   | |REPLACE_WITH_DASH_DASH-/                        ||
+%      ||     k2            \-/      /REPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASH\                ||
+%  wall||]REPLACE_WITH_DASH_DASH/\/\/\REPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASH-| M2 |                ||
+%      ||                            \REPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASH/                ||
+%      ||                                                  ||
+% REPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHyeq2REPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASH y1 REPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASH y2 REPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHyeq1REPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASH> y axis
+%
+%
+% The model is a simplified version of the model proposed in the following
+% reference: 
+%
+% A. Bemporad, S. Di Cairano, I. V. Kolmanovsky, and D. Hrovat, "Hybrid
+% modeling and control of a multibody magnetic actuator for automotive
+% applications," in Proc. 46th IEEE(R) Conf. on Decision and Control, New
+% Orleans, LA, 2007. 
+
+%% Model Parameters
+M1=1;       % mass
+M2=5;       % mass
+k1=1;       % spring constant
+k2=0.1;     % spring constant
+b1=0.3;     % friction coefficient
+b2=0.8;     % friction coefficient
+yeq1=10;    % wall mount position 
+yeq2=-10;   % wall mount position 
+
+%% State Space Models
+% states: position and velocity of mass M1; 
+% manipulated variable: pull force F
+% measured disturbance: a constant value of 1 which provides calibrates spring force to the right value
+% measured output: position of mass M1 
+%
+% State-space model of M1 when masses are not in contact.
+A1=[0 1;-k1/M1 -b1/M1];
+B1=[0 0;-1/M1 k1*yeq1/M1];
+C1=[1 0];
+D1=[0 0];
+sys1=ss(A1,B1,C1,D1);
+sys1=setmpcsignals(sys1,'MD',2);
+
+%%
+% State-space model when the two masses are in contact.
+A2=[0 1;-(k1+k2)/(M1+M2) -(b1+b2)/(M1+M2)];
+B2=[0 0;-1/(M1+M2) (k1*yeq1+k2*yeq2)/(M1+M2)];
+C2=[1 0];
+D2=[0 0];
+sys2=ss(A2,B2,C2,D2);
+sys2=setmpcsignals(sys2,'MD',2);
+
+%% Multi-MPC Control Setup
+Ts=0.2;     % sampling time
+p=20;       % prediction horizon
+m=1;        % control horizon 
+
+%% 
+% Define MPC object for mass M1 detached from M2.
+MPC1=mpc(sys1,Ts,p,m);
+MPC1.Weights.OV=1;
+
+%% 
+% Define constraints on the manipulated variable.
+MPC1.MV=struct('Min',0,'Max',Inf,'RateMin',-1e3,'RateMax',1e3);
+
+%% 
+% Define MPC object for mass M1 and M2 stuck together.
+MPC2=mpc(sys2,Ts,p,m);
+MPC2.Weights.OV=1;
+
+%% 
+% Define constraints on the manipulated variable.
+MPC2.MV=MPC1.MV;
+
+%% Simulation with Multiple MPC Controllers Block
+if ~mpcchecktoolboxinstalled('simulink')
+    disp('Simulink(R) is required to run this demo.')
+    return
+end
+
+%% 
+% Simulate with Multiple MPC Controllers block.
+Tstop=100;      % Simulation time
+y1initial=0;    % Initial positions
+y2initial=10;
+open_system('mpc_switching');
+if exist('animationmpc_switchoff','var') && animationmpc_switchoff
+    set_param('mpc_switching/Animation','OFF','true');
+    clear animationmpc_switchoff
+end
+%%
+disp('Start simulation by switching control between MPC1 and MPC2 ...');
+set_param('mpc_switching/signals','Open','On');
+sim('mpc_switching',Tstop);
+%%
+% Use of two controllers provides good performance under all conditions.
+
+%% Repeat Simulation Using MPC1 Only (Assumes Masses Never in Contact)
+disp('Now repeat simulation by using only MPC1 ...');
+disp('When two masses stick together, control performance deteriorates.');
+MPC2save=MPC2;
+MPC2=MPC1;
+sim('mpc_switching',Tstop);
+%%
+% In this case, performance degrades whenever the two masses join.
+
+%% Repeat Simulation Using MPC2 Only (Assumes Masses Always in Contact)
+disp('Now repeat simulation by using only MPC2 ...');
+disp('When two masses are detached, control performance deteriorates.');
+MPC1=MPC2save;
+MPC2=MPC1;
+sim('mpc_switching',Tstop);
+%%
+% In this case, performance degrades when the masses separate, causing
+% the controller to apply excessive force.
+
+%%
+bdclose('mpc_switching')
+close(findobj('Tag','mpc_switching_demo'))
+displayEndOfDemoMessage(mfilename)
+
+
+##### SOURCE END #####
+--></body></html>

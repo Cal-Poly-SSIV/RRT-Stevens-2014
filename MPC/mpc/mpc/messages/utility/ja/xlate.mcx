@@ -1,0 +1,304 @@
+<()Invalid time format. The value of the "History" property must be either a date number or a date string.  Type "help datenum" or "help datestr" for more information.
+>()*JA*Invalid time format. The value of the "History" property must be either a date number or a date string.  Type "help datenum" or "help datestr" for more information.
+
+<()Control horizon must be either a positive finite integer or a vector of positive finite integers.
+>()*JA*Control horizon must be either a positive finite integer or a vector of positive finite integers.
+
+<()Control horizon requires all the entries no less than 1.
+>()*JA*Control horizon requires all the entries no less than 1.
+
+<()You have specified an initial state for the measurement noise model that is not a state space model.  Use state space model instead.
+>()*JA*You have specified an initial state for the measurement noise model that is not a state space model.  Use state space model instead.
+
+<()No sample time provided for measurement noise model.
+>()*JA*No sample time provided for measurement noise model.
+
+<()Cannot change sample time of measurement noise model. Error message: "%s".
+>()*JA*Cannot change sample time of measurement noise model. Error message: "%s".
+
+<()The "Optimizer" property of an "mpc" object must be a structure with fields "MaxIter", "Trace", "Solver" and "MinOutputECR".
+>()*JA*The "Optimizer" property of an "mpc" object must be a structure with fields "MaxIter", "Trace", "Solver" and "MinOutputECR".
+
+<()The "Optimizer" property of an "mpc" object does not allow field "%s". Valid field names include "MaxIter", "Trace", "Solver" and "MinOutputECR".
+>()*JA*The "Optimizer" property of an "mpc" object does not allow field "%s". Valid field names include "MaxIter", "Trace", "Solver" and "MinOutputECR".
+
+<()The "Optimizer" property of an "mpc" object has an ambiguous field. Supply more characters.
+>()*JA*The "Optimizer" property of an "mpc" object has an ambiguous field. Supply more characters.
+
+<()The "Optimizer.MaxIter" property of an "mpc" object must be a positive integer.
+>()*JA*The "Optimizer.MaxIter" property of an "mpc" object must be a positive integer.
+
+<()The "Optimizer.Trace" property of an "mpc" object must be a string of either "on" or "off".
+>()*JA*The "Optimizer.Trace" property of an "mpc" object must be a string of either "on" or "off".
+
+<()The "Optimizer.Solver" property of an "mpc" object must be string "ActiveSet".
+>()*JA*The "Optimizer.Solver" property of an "mpc" object must be string "ActiveSet".
+
+<()The "Optimizer.MinOutputECR" property of an "mpc" object must be a positive scalar number.
+>()*JA*The "Optimizer.MinOutputECR" property of an "mpc" object must be a positive scalar number.
+
+<()Disturbance model "%s" must be an LTI object with %d outputs.
+>()*JA*Disturbance model "%s" must be an LTI object with %d outputs.
+
+<()Cannot change sample time of disturbance model "%s".
+>()*JA*Cannot change sample time of disturbance model "%s".
+
+<()Prediction horizon expects be a positive finite integer.
+>()*JA*Prediction horizon expects be a positive finite integer.
+
+<()Sample time must be either a finite real positive number or empty.
+>()*JA*Sample time must be either a finite real positive number or empty.
+
+<()You have specified an initial state for the unmeasured input disturbance model that is not a state space model.  Use state space model instead.
+>()*JA*You have specified an initial state for the unmeasured input disturbance model that is not a state space model.  Use state space model instead.
+
+<()Unmeasured input disturbance model must have %d outputs.
+>()*JA*Unmeasured input disturbance model must have %d outputs.
+
+<()No sample time provided for the unmeasured input disturbance model.
+>()*JA*No sample time provided for the unmeasured input disturbance model.
+
+<()Cannot change sample time of the unmeasured input disturbance model. Error message: "%s".
+>()*JA*Cannot change sample time of the unmeasured input disturbance model. Error message: "%s".
+
+<()The "Weights" property of an "mpc" object must be a structure with fields "ManipulatedVariables", "ManipulatedVariablesRate", "OutputVariables", "ECR".
+>()*JA*The "Weights" property of an "mpc" object must be a structure with fields "ManipulatedVariables", "ManipulatedVariablesRate", "OutputVariables", "ECR".
+
+<()The "Weights" property of an "mpc" object does not allow field "%s". Valid field names include "ManipulatedVariables", "ManipulatedVariablesRate", "OutputVariables", "ECR".
+>()*JA*The "Weights" property of an "mpc" object does not allow field "%s". Valid field names include "ManipulatedVariables", "ManipulatedVariablesRate", "OutputVariables", "ECR".
+
+<()Weight values must be non-negative finite real numbers.
+>()*JA*Weight values must be non-negative finite real numbers.
+
+<()Non-diagonal weight matrix must be a %d-by-%d matrix contained in a single cell.
+>()*JA*Non-diagonal weight matrix must be a %d-by-%d matrix contained in a single cell.
+
+<()Weights in "%s" must be non-negative finite real numbers.
+>()*JA*Weights in "%s" must be non-negative finite real numbers.
+
+<()Weights in "%s" must have %d columns.
+>()*JA*Weights in "%s" must have %d columns.
+
+<()Weight matrix must be positive semidefinite.
+>()*JA*Weight matrix must be positive semidefinite.
+
+<()Weights in "%s" must be a %d-by-%d matrix.
+>()*JA*Weights in "%s" must be a %d-by-%d matrix.
+
+<()Problems encountered when designing the overall state observer (Kalman filter). %s
+>()*JA*Problems encountered when designing the overall state observer (Kalman filter). %s
+
+<()Plant model is not detectable from measured outputs.
+>()*JA*Plant model is not detectable from measured outputs.
+
+<()Plant model was obtained using the command "ss", try using "ss" with option "min".  Example: "MPCobj.Model.Plant=ss(G,'min')".
+>()*JA*Plant model was obtained using the command "ss", try using "ss" with option "min".  Example: "MPCobj.Model.Plant=ss(G,'min')".
+
+<()The overall system is not detectable. Possible remedies are:
+>()*JA*The overall system is not detectable. Possible remedies are:
+
+<()(1) change Model.Plant
+>()*JA*(1) change Model.Plant
+
+<()(2) change Model.Disturbance. Type "help setindist" command for more information.
+>()*JA*(2) change Model.Disturbance. Type "help setindist" command for more information.
+
+<()(3) change Model.Noise
+>()*JA*(3) change Model.Noise
+
+<()(4) change output disturbance model. Type "help setoutdist" command for more information.
+>()*JA*(4) change output disturbance model. Type "help setoutdist" command for more information.
+
+<()The overall system has unobservable modes in z=1.
+>()*JA*The overall system has unobservable modes in z=1.
+
+<()"%s" expects a %d-by-1 struct array.
+>()*JA*"%s" expects a %d-by-1 struct array.
+
+<()"%s" expects a struct.
+>()*JA*"%s" expects a struct.
+
+<()Too many elements in structure "%s".  The length of the struct array should be <= %d.
+>()*JA*Too many elements in structure "%s".  The length of the struct array should be <= %d.
+
+<()The field "%s" in structure "%s(%d)" is invalid.
+>()*JA*The field "%s" in structure "%s(%d)" is invalid.
+
+<()Signal names must be specified in the "Model.Plant.InputName" and "Model.Plant.OutputName" properties of an "mpc" object. Type "help setname" for more information.
+>()*JA*Signal names must be specified in the "Model.Plant.InputName" and "Model.Plant.OutputName" properties of an "mpc" object. Type "help setname" for more information.
+
+<()Field "%s(%d).%s" must be a string.
+>()*JA*Field "%s(%d).%s" must be a string.
+
+<()Field "%s(%d).%s" must be real valued or string "%s".
+>()*JA*Field "%s(%d).%s" must be real valued or string "%s".
+
+<()Field "%s(%d).%s" must be real valued.
+>()*JA*Field "%s(%d).%s" must be real valued.
+
+<()Field "%s(%d).%s" must be a non-negative and finite value.
+>()*JA*Field "%s(%d).%s" must be a non-negative and finite value.
+
+<()Field "%s(%d).Min" must be smaller than field "%s(%d).Max".
+>()*JA*Field "%s(%d).Min" must be smaller than field "%s(%d).Max".
+
+<()Field "%s(%d).RateMin" must be smaller than field "%s(%d).RateMax".
+>()*JA*Field "%s(%d).RateMin" must be smaller than field "%s(%d).RateMax".
+
+<()Initial condition vector for plant states must have 4 elements.
+>()*JA*Initial condition vector for plant states must have 4 elements.
+
+<()Incompatible port widths or dimensions.\n %s
+>()*JA*Incompatible port widths or dimensions.\n %s
+
+<()The MPC block requires the number of measured outputs to be %d, but the port width is %d.
+>()*JA*The MPC block requires the number of measured outputs to be %d, but the port width is %d.
+
+<()The MPC block requires the number of setpoint signals to be %d, but the port width is %d.
+>()*JA*The MPC block requires the number of setpoint signals to be %d, but the port width is %d.
+
+<()The MPC block requires the number of measured disturbances to be %d, but the port width is %d.
+>()*JA*The MPC block requires the number of measured disturbances to be %d, but the port width is %d.
+
+<()The MPC block requires the number of externally supplied manipulated variables to be %d, but the port width is %d.
+>()*JA*The MPC block requires the number of externally supplied manipulated variables to be %d, but the port width is %d.
+
+<()The MPC block requires the number of input lower bounds to be %d, but the port width is %d.
+>()*JA*The MPC block requires the number of input lower bounds to be %d, but the port width is %d.
+
+<()The MPC block requires the number of input upper bounds to be %d, but the port width is %d.
+>()*JA*The MPC block requires the number of input upper bounds to be %d, but the port width is %d.
+
+<()The MPC block requires the number of output lower bounds to be %d, but the port width is %d.
+>()*JA*The MPC block requires the number of output lower bounds to be %d, but the port width is %d.
+
+<()The MPC block requires the number of output upper bounds to be %d, but the port width is %d.
+>()*JA*The MPC block requires the number of output upper bounds to be %d, but the port width is %d.
+
+<()Invalid input signal type "%s". Valid signal types include "ManipulatedVariable", "MeasuredDisturbance", "UnmeasuredDisturbance".
+>()*JA*Invalid input signal type "%s". Valid signal types include "ManipulatedVariable", "MeasuredDisturbance", "UnmeasuredDisturbance".
+
+<()Invalid output signal type "%s". Valid signal types include "MeasuredOutput" and "UnmeasuredOutput".
+>()*JA*Invalid output signal type "%s". Valid signal types include "MeasuredOutput" and "UnmeasuredOutput".
+
+<()Manipulated variables and measured disturbances must not have common indices.
+>()*JA*Manipulated variables and measured disturbances must not have common indices.
+
+<()Manipulated variables and unmeasured disturbances must not have common indices.
+>()*JA*Manipulated variables and unmeasured disturbances must not have common indices.
+
+<()Measured disturbances and unmeasured disturbances must not have common indices.
+>()*JA*Measured disturbances and unmeasured disturbances must not have common indices.
+
+<()Measured outputs and unmeasured outputs must not have common indices.
+>()*JA*Measured outputs and unmeasured outputs must not have common indices.
+
+<()No sample time is provided for plant model.
+>()*JA*No sample time is provided for plant model.
+
+<()Cannot change sample time of plant model.  Error message: "%s".
+>()*JA*Cannot change sample time of plant model.  Error message: "%s".
+
+<()The "Model.Nominal" property of an "mpc" object must be a structure with fields "X", "Y", "U", "DX".
+>()*JA*The "Model.Nominal" property of an "mpc" object must be a structure with fields "X", "Y", "U", "DX".
+
+<()State offset cannot be applied to a "%s" model.
+>()*JA*State offset cannot be applied to a "%s" model.
+
+<()State-update offset cannot be applied to a "%s" model.
+>()*JA*State-update offset cannot be applied to a "%s" model.
+
+<()Invalid field "%s". The "Model.Nominal" property of an "mpc" object must be a structure with fields "X", "Y", "U", "DX".
+>()*JA*Invalid field "%s". The "Model.Nominal" property of an "mpc" object must be a structure with fields "X", "Y", "U", "DX".
+
+<()The "Model.Nominal.%s" property of an "mpc" object must be a %d-by-1 array with finite real values.
+>()*JA*The "Model.Nominal.%s" property of an "mpc" object must be a %d-by-1 array with finite real values.
+
+<()Invalid reference signal "%s" in base workspace.
+>()*JA*Invalid reference signal "%s" in base workspace.
+
+<()Invalid measured disturbance signal "%s" in base workspace.
+>()*JA*Invalid measured disturbance signal "%s" in base workspace.
+
+<()%s must a real valued vector.
+>()*JA*%s must a real valued vector.
+
+<()%s must be a vector of length %d.
+>()*JA*%s must be a vector of length %d.
+
+<()Initial state of noise model
+>()*JA*Initial state of noise model
+
+<()Initial state of unmeasured input disturbance model
+>()*JA*Initial state of unmeasured input disturbance model
+
+<()Initial state of plant model
+>()*JA*Initial state of plant model
+
+<()Initial Input
+>()*JA*Initial Input
+
+<()LastMove
+>()*JA*LastMove
+
+<()Invalid field "%s". The "Model" property of an "mpc" object must be a structure with fields: "Plant", "Nominal", "Disturbance" and "Noise".
+>()*JA*Invalid field "%s". The "Model" property of an "mpc" object must be a structure with fields: "Plant", "Nominal", "Disturbance" and "Noise".
+
+<()The "Model.Plant" property of an "mpc" object must be an "lti" object.
+>()*JA*The "Model.Plant" property of an "mpc" object must be an "lti" object.
+
+<()The "Model.Plant" property of an "mpc" object does not allow an arrays of "lti" objects.
+>()*JA*The "Model.Plant" property of an "mpc" object does not allow an arrays of "lti" objects.
+
+<()The "Model.Plant" property of an "mpc" object does not allow an "lti" object with complex coefficients.
+>()*JA*The "Model.Plant" property of an "mpc" object does not allow an "lti" object with complex coefficients.
+
+<()You must specify a sample time when the "Model.Plant" property of an "mpc" object is continuous-time.
+>()*JA*You must specify a sample time when the "Model.Plant" property of an "mpc" object is continuous-time.
+
+<()The "Model.Plant" property of an "mpc" object must have at least one manipulated variable.
+>()*JA*The "Model.Plant" property of an "mpc" object must have at least one manipulated variable.
+
+<()Nonzero offsets on unmeasured disturbance inputs are not allowed. Treat such offsets as extra measured disturbances.
+>()*JA*Nonzero offsets on unmeasured disturbance inputs are not allowed. Treat such offsets as extra measured disturbances.
+
+<()Direct feedthrough from manipulated variables to any output is not allowed.
+>()*JA*Direct feedthrough from manipulated variables to any output is not allowed.
+
+<()The "Model.Disturbance" property of an "mpc" object must be either an "lti" or a "idmodel" object.
+>()*JA*The "Model.Disturbance" property of an "mpc" object must be either an "lti" or a "idmodel" object.
+
+<()The "Model.Disturbance" property of an "mpc" object does not allow an arrays of "lti" objects.
+>()*JA*The "Model.Disturbance" property of an "mpc" object does not allow an arrays of "lti" objects.
+
+<()The "Model.Disturbance" property of an "mpc" object does not allow an "lti" object with complex coefficients.
+>()*JA*The "Model.Disturbance" property of an "mpc" object does not allow an "lti" object with complex coefficients.
+
+<()Unmeasured input disturbance model must have %d outputs.
+>()*JA*Unmeasured input disturbance model must have %d outputs.
+
+<()The "Model.Noise" property of an "mpc" object must be either an "lti" or a "idmodel" object.
+>()*JA*The "Model.Noise" property of an "mpc" object must be either an "lti" or a "idmodel" object.
+
+<()The "Model.Noise" property of an "mpc" object does not allow an arrays of "lti" objects.
+>()*JA*The "Model.Noise" property of an "mpc" object does not allow an arrays of "lti" objects.
+
+<()The "Model.Noise" property of an "mpc" object does not allow an "lti" object with complex coefficients.
+>()*JA*The "Model.Noise" property of an "mpc" object does not allow an "lti" object with complex coefficients.
+
+<()Measurement noise model must have %d outputs that equals the number of measured outputs.
+>()*JA*Measurement noise model must have %d outputs that equals the number of measured outputs.
+
+<()The output signal names of the unmeasured input disturbance model be specified in the "Model.Plant.InputName" property of an "mpc" object.
+>()*JA*The output signal names of the unmeasured input disturbance model be specified in the "Model.Plant.InputName" property of an "mpc" object.
+
+<()Dimensions of %s of MPC objects %s and %s are not consistent
+>()*JA*Dimensions of %s of MPC objects %s and %s are not consistent
+
+<()Error in port widths or dimensions. The Multiple MPC object specifies that the number of %s is %d, however %d are connected\n
+>()*JA*Error in port widths or dimensions. The Multiple MPC object specifies that the number of %s is %d, however %d are connected\n
+
+<()Simulation start time has to be a scalar non-negative number or such a variable existing in model workspace or base workspace. 
+>()*JA*Simulation start time has to be a scalar non-negative number or such a variable existing in model workspace or base workspace. 
+
+% 101 messages need translation.

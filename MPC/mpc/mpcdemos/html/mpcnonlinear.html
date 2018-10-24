@@ -1,0 +1,180 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   <!--
+This HTML is auto-generated from an M-file.
+To make changes, update the M-file and republish this document.
+      --><title>MPC Control of a Multi-Input Multi-Output Nonlinear System</title><meta name="generator" content="MATLAB 7.10"><meta name="date" content="2010-01-05"><meta name="m-file" content="mpcnonlinear"><link rel="stylesheet" type="text/css" href="../../../matlab/demos/private/style.css"></head><body><div class="header"><div class="left"><a href="matlab:edit mpcnonlinear">Open mpcnonlinear.m in the Editor</a></div><div class="right"><a href="matlab:echodemo mpcnonlinear">Run in the Command Window</a></div></div><div class="content"><h1>MPC Control of a Multi-Input Multi-Output Nonlinear System</h1><!--introduction--><!--/introduction--><h2>Contents</h2><div><ul><li><a href="#2">Open-Loop Model: Linearize Nonlinear System</a></li><li><a href="#4">MPC Controller Setup</a></li><li><a href="#9">MPC Simulation Using Simulink&reg;</a></li><li><a href="#10">MPC Simulation with Ramp Signals</a></li><li><a href="#12">MPC Simulation without Constraints</a></li><li><a href="#17">Compare Simulation Results</a></li></ul></div><p>This demonstration shows how to use MPC to control a multi-input multi-output nonlinear system. The system has 3 manipulated variables and 2 measured outputs.</p><h2>Open-Loop Model: Linearize Nonlinear System<a name="2"></a></h2><pre class="codeinput"><span class="keyword">if</span> ~mpcchecktoolboxinstalled(<span class="string">'simulink'</span>)
+    disp(<span class="string">'Simulink(R) is required to run this demo.'</span>)
+    <span class="keyword">return</span>
+<span class="keyword">end</span>
+<span class="keyword">if</span> ~mpcchecktoolboxinstalled(<span class="string">'scd'</span>)
+    disp(<span class="string">'Simulink Control Design(R) is required to run this demo.'</span>)
+    <span class="keyword">return</span>
+<span class="keyword">end</span>
+</pre><p>The nonlinear model is described in the Simulink&reg; diagram "nonlinear_mpcmodel.mdl" and we linearize the nonlinear model at the default operating point using the "linearize" function from Simulink Control Design.</p><pre class="codeinput">model = linearize(<span class="string">'nonlinear_mpcmodel'</span>);
+</pre><h2>MPC Controller Setup<a name="4"></a></h2><p>Let us define the plant model that will be used for MPC control. First, we get a discrete-time version of the linearized model:</p><pre class="codeinput">Ts=.2;                          <span class="comment">%Sampling time</span>
+model=c2d(model,Ts);      <span class="comment">%Convert to discrete time</span>
+</pre><p>Assign names to I/O variables (note: the model has no physical meaning).</p><pre class="codeinput">model.InputName={<span class="string">'Mass Flow'</span>;<span class="string">'Heat Flow'</span>;<span class="string">'Pressure'</span>};
+model.OutputName={<span class="string">'Temperature'</span>;<span class="string">'Level'</span>};
+</pre><p>Define I/O constraints and units.</p><pre class="codeinput">clear <span class="string">InputSpecs</span> <span class="string">OutputSpecs</span>
+InputSpecs(1)=struct(<span class="string">'Min'</span>,-3,<span class="string">'Max'</span>,3,<span class="string">'RateMin'</span>,-1000,<span class="string">'Ratemax'</span>,Inf,<span class="string">'Units'</span>,<span class="string">'kg/s'</span>);
+InputSpecs(2)=struct(<span class="string">'Min'</span>,-2,<span class="string">'Max'</span>,2,<span class="string">'RateMin'</span>,-1000,<span class="string">'Ratemax'</span>,Inf,<span class="string">'Units'</span>,<span class="string">'J/s'</span>);
+InputSpecs(3)=struct(<span class="string">'Min'</span>,-2,<span class="string">'Max'</span>,2,<span class="string">'RateMin'</span>,-1000,<span class="string">'Ratemax'</span>,Inf,<span class="string">'Units'</span>,<span class="string">'Pa'</span>);
+OutputSpecs(1)=struct(<span class="string">'Min'</span>,-Inf,<span class="string">'Max'</span>,Inf,<span class="string">'Units'</span>,<span class="string">'K'</span>);
+OutputSpecs(2)=struct(<span class="string">'Min'</span>,-Inf,<span class="string">'Max'</span>,Inf,<span class="string">'Units'</span>,<span class="string">'m'</span>);
+</pre><p>Define weights on manipulated and controlled variables.</p><pre class="codeinput">Weights=struct(<span class="string">'ManipulatedVariables'</span>,[0 0 0],<span class="keyword">...</span>
+   <span class="string">'ManipulatedVariablesRate'</span>,[.1 .1 .1],<span class="keyword">...</span>
+   <span class="string">'OutputVariables'</span>,[1 1]);
+</pre><p>Define prediction and control horizons, and set up the MPC object.</p><pre class="codeinput">p=5;
+m=2;
+MPCobj=mpc(model,Ts,p,m,Weights,InputSpecs,OutputSpecs);
+</pre><h2>MPC Simulation Using Simulink&reg;<a name="9"></a></h2><p>Run simulation.</p><pre class="codeinput">Tfinal=8;
+open_system(<span class="string">'mpc_nonlinear'</span>)    <span class="comment">% Open Simulink(R) Model</span>
+sim(<span class="string">'mpc_nonlinear'</span>,Tfinal);    <span class="comment">% Start Simulation</span>
+</pre><pre class="codeoutput">--&gt;Integrated white noise added on measured output channel #1.
+--&gt;Integrated white noise added on measured output channel #2.
+--&gt;The "Model.Noise" property of the "mpc" object is empty. Assuming white noise on each measured output channel.
+</pre><img vspace="5" hspace="5" src="mpcnonlinear_01.png" alt=""> <img vspace="5" hspace="5" src="mpcnonlinear_02.png" alt=""> <img vspace="5" hspace="5" src="mpcnonlinear_03.png" alt=""> <h2>MPC Simulation with Ramp Signals<a name="10"></a></h2><p>Now we modify the MPC design in order to track ramp signals.</p><p>In order to track a ramp, a triple integrator is defined as an output disturbance model on both outputs.</p><pre class="codeinput">outdistmodel=tf({1 0;0 1},{[1 0 0 0],1;1,[1 0 0 0]});
+setoutdist(MPCobj,<span class="string">'model'</span>,outdistmodel);
+</pre><pre class="codeoutput">--&gt;The "Model.Noise" property of the "mpc" object is empty. Assuming white noise on each measured output channel.
+</pre><p>Run simulation.</p><pre class="codeinput">Tfinal=12;
+bdclose(<span class="string">'mpc_nonlinear'</span>);
+open_system(<span class="string">'mpc_nonlinear_setoutdist'</span>) <span class="comment">% Open Simulink(R) Model</span>
+sim(<span class="string">'mpc_nonlinear_setoutdist'</span>,Tfinal); <span class="comment">% Start Simulation</span>
+</pre><img vspace="5" hspace="5" src="mpcnonlinear_04.png" alt=""> <img vspace="5" hspace="5" src="mpcnonlinear_05.png" alt=""> <img vspace="5" hspace="5" src="mpcnonlinear_06.png" alt=""> <h2>MPC Simulation without Constraints<a name="12"></a></h2><p>Now we get a linear version of the MPC controller.</p><p>When the constraints are not active, the MPC controller behaves like a linear controller. We can then get the state-space form of the MPC controller.</p><p>Get the linear equivalent in SS form of the MPC controller.</p><pre class="codeinput">LTIMPC=ss(MPCobj,<span class="string">'r'</span>);
+</pre><p>The input to the linear controller LTIMPC is the vector [ym;r], where ym is the vector of measured outputs, and r is the vector of output references.</p><p>Remove constraints from MPC controller.</p><pre class="codeinput">MPCobj.MV=[];
+</pre><p>Run simulation.</p><pre class="codeinput">refs=[1;1];                         <span class="comment">% output references</span>
+Tfinal=8;
+bdclose(<span class="string">'mpc_nonlinear_setoutdist'</span>);
+open_system(<span class="string">'mpc_nonlinear_ss'</span>)     <span class="comment">% Open Simulink(R) Model</span>
+sim(<span class="string">'mpc_nonlinear_ss'</span>,Tfinal);     <span class="comment">% Start Simulation</span>
+</pre><pre class="codeoutput">--&gt;The "Model.Noise" property of the "mpc" object is empty. Assuming white noise on each measured output channel.
+</pre><img vspace="5" hspace="5" src="mpcnonlinear_07.png" alt=""> <img vspace="5" hspace="5" src="mpcnonlinear_08.png" alt=""> <img vspace="5" hspace="5" src="mpcnonlinear_09.png" alt=""> <img vspace="5" hspace="5" src="mpcnonlinear_10.png" alt=""> <img vspace="5" hspace="5" src="mpcnonlinear_11.png" alt=""> <h2>Compare Simulation Results<a name="17"></a></h2><pre class="codeinput">fprintf(<span class="string">'Compare output trajectories: ||ympc-ylin||=%g\n'</span>,norm(ympc-ylin));
+disp(<span class="string">'The MPC controller and the linear controller produce the same closed-loop trajectories.'</span>);
+</pre><pre class="codeoutput">Compare output trajectories: ||ympc-ylin||=2.34083e-014
+The MPC controller and the linear controller produce the same closed-loop trajectories.
+</pre><pre class="codeinput">bdclose(<span class="string">'mpc_nonlinear_ss'</span>)
+</pre><p class="footer">Copyright 1990-2009 The MathWorks, Inc.<br>
+          Published with MATLAB&reg; 7.10</p><p class="footer" id="trademarks">MATLAB and Simulink are registered trademarks of The MathWorks, Inc.  Please see <a href="http://www.mathworks.com/trademarks">www.mathworks.com/trademarks</a> for a list of other trademarks owned by The MathWorks, Inc.  Other product or brand names are trademarks or registered trademarks of their respective owners.</p></div><!--
+##### SOURCE BEGIN #####
+%% MPC Control of a Multi-Input Multi-Output Nonlinear System
+
+%%
+% This demonstration shows how to use MPC to control a multi-input
+% multi-output nonlinear system. The system has 3 manipulated variables and
+% 2 measured outputs.
+%
+% Copyright 1990-2009 The MathWorks, Inc.
+% $Revision: 1.1.8.13 $  $Date: 2009/11/09 16:28:18 $   
+
+%% Open-Loop Model: Linearize Nonlinear System
+if ~mpcchecktoolboxinstalled('simulink')
+    disp('Simulink(R) is required to run this demo.')
+    return
+end
+if ~mpcchecktoolboxinstalled('scd')
+    disp('Simulink Control Design(R) is required to run this demo.')
+    return
+end
+
+%%
+% The nonlinear model is described in the Simulink(R) diagram
+% "nonlinear_mpcmodel.mdl" and we linearize the nonlinear model at the
+% default operating point using the "linearize" function from Simulink
+% Control Design.   
+model = linearize('nonlinear_mpcmodel'); 
+
+%% MPC Controller Setup
+% Let us define the plant model that will be used for MPC control. First,
+% we get a discrete-time version of the linearized model:
+Ts=.2;                          %Sampling time
+model=c2d(model,Ts);      %Convert to discrete time
+
+%%
+% Assign names to I/O variables (note: the model has no physical meaning).
+model.InputName={'Mass Flow';'Heat Flow';'Pressure'};  
+model.OutputName={'Temperature';'Level'};
+
+%%
+% Define I/O constraints and units.
+clear InputSpecs OutputSpecs
+InputSpecs(1)=struct('Min',-3,'Max',3,'RateMin',-1000,'Ratemax',Inf,'Units','kg/s');
+InputSpecs(2)=struct('Min',-2,'Max',2,'RateMin',-1000,'Ratemax',Inf,'Units','J/s');
+InputSpecs(3)=struct('Min',-2,'Max',2,'RateMin',-1000,'Ratemax',Inf,'Units','Pa');
+OutputSpecs(1)=struct('Min',-Inf,'Max',Inf,'Units','K');
+OutputSpecs(2)=struct('Min',-Inf,'Max',Inf,'Units','m');
+
+%%
+% Define weights on manipulated and controlled variables.
+Weights=struct('ManipulatedVariables',[0 0 0],...
+   'ManipulatedVariablesRate',[.1 .1 .1],...
+   'OutputVariables',[1 1]);
+
+%% 
+% Define prediction and control horizons, and set up the MPC object.
+p=5;
+m=2;
+MPCobj=mpc(model,Ts,p,m,Weights,InputSpecs,OutputSpecs);
+
+%% MPC Simulation Using Simulink(R)
+% Run simulation.
+Tfinal=8;
+open_system('mpc_nonlinear')    % Open Simulink(R) Model
+sim('mpc_nonlinear',Tfinal);    % Start Simulation
+
+%% MPC Simulation with Ramp Signals
+% Now we modify the MPC design in order to track ramp signals.
+%
+% In order to track a ramp, a triple integrator is defined as an output 
+% disturbance model on both outputs.
+outdistmodel=tf({1 0;0 1},{[1 0 0 0],1;1,[1 0 0 0]});
+setoutdist(MPCobj,'model',outdistmodel);
+
+%%
+% Run simulation.
+Tfinal=12;
+bdclose('mpc_nonlinear');               
+open_system('mpc_nonlinear_setoutdist') % Open Simulink(R) Model
+sim('mpc_nonlinear_setoutdist',Tfinal); % Start Simulation
+
+%% MPC Simulation without Constraints
+% Now we get a linear version of the MPC controller.
+%
+% When the constraints are not active, the MPC controller behaves like a
+% linear controller. We can then get the state-space form of the MPC 
+% controller.
+
+%%
+% Get the linear equivalent in SS form of the MPC controller.
+LTIMPC=ss(MPCobj,'r');
+
+%%
+% The input to the linear controller LTIMPC is the vector [ym;r], where ym
+% is the vector of measured outputs, and r is the vector of output
+% references.
+
+%%
+% Remove constraints from MPC controller.
+MPCobj.MV=[];
+
+%%
+% Run simulation.
+refs=[1;1];                         % output references
+Tfinal=8;
+bdclose('mpc_nonlinear_setoutdist');
+open_system('mpc_nonlinear_ss')     % Open Simulink(R) Model
+sim('mpc_nonlinear_ss',Tfinal);     % Start Simulation
+
+%% Compare Simulation Results
+fprintf('Compare output trajectories: ||ympc-ylin||=%g\n',norm(ympc-ylin));
+disp('The MPC controller and the linear controller produce the same closed-loop trajectories.');
+
+%%
+bdclose('mpc_nonlinear_ss')         
+displayEndOfDemoMessage(mfilename)
+
+##### SOURCE END #####
+--></body></html>

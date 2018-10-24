@@ -1,0 +1,167 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   <!--
+This HTML is auto-generated from an M-file.
+To make changes, update the M-file and republish this document.
+      --><title>MPC Supervisory Control of a Two Stage Thermo-Mechanical Pulping Process</title><meta name="generator" content="MATLAB 7.10"><meta name="date" content="2010-01-05"><meta name="m-file" content="mpctmpdemo"><link rel="stylesheet" type="text/css" href="../../../matlab/demos/private/style.css"></head><body><div class="header"><div class="left"><a href="matlab:edit mpctmpdemo">Open mpctmpdemo.m in the Editor</a></div><div class="right"><a href="matlab:echodemo mpctmpdemo">Run in the Command Window</a></div></div><div class="content"><h1>MPC Supervisory Control of a Two Stage Thermo-Mechanical Pulping Process</h1><!--introduction--><!--/introduction--><h2>Contents</h2><div><ul><li><a href="#2">Plant Description</a></li><li><a href="#3">Modeling of the TMP Plant in Simulink&reg;</a></li><li><a href="#7">Tuning the Controller Using the MPC GUI</a></li><li><a href="#8">Simulating the Design in Simulink&reg;</a></li></ul></div><p>This demo illustrates control of a thermo-mechanical pulping (TMP) application using MPC.</p><h2>Plant Description<a name="2"></a></h2><p>The following diagram shows a typical process arrangement for a two stage TMP operation. Two pressured refiners operate in sequence to produce a mechanical pulp suitable for making newsprint.</p><p>A primary objective of controlling the TMP plant is to regulate the energy applied to the pulp by the electric motors which drive each refiner to derive pulp with good physical properties without incurring excess energy costs.</p><p>A secondary control objective is to regulate the ratio of dry mass flow rate to overall mass flow rate (known as consistency) measured at the outlet of each refiner.</p><p>In practice these objectives amount to regulating the primary and secondary refiner motor loads and the primary and secondary refiner constancies subject to the following output constraints:</p><p>(1) Power on each refiner must be less than maximum rated values rated.</p><p>(2) Maintain the vibration level on the two refiners below a critical level defined to prevent refiner plate clash.</p><p>(3) Limits on measured consistency to prevent blow line plugging and fiber damage.</p><p>Manipulated variables comprise:</p><div><ul><li>set points to the two gap controllers regulating the distance between the refiner plates</li><li>the dilution flow rates to the two refiners</li><li>the rpm of the screw feeder</li></ul></div><p>Physical limits are also imposed on each of these inputs.</p><p><img vspace="5" hspace="5" src="tmpplant.jpg" alt=""> </p><h2>Modeling of the TMP Plant in Simulink&reg;<a name="3"></a></h2><pre class="codeinput"><span class="keyword">if</span> ~mpcchecktoolboxinstalled(<span class="string">'simulink'</span>)
+    disp(<span class="string">'Simulink(R) is required to run this demo.'</span>)
+    <span class="keyword">return</span>
+<span class="keyword">end</span>
+</pre><p>The following Simulink&reg; model represents a TMP plant and an MPC Controller designed for the control objectives described above. The model can be opened with:</p><pre class="codeinput">open_system(<span class="string">'TMPdemo'</span>)
+</pre><img vspace="5" hspace="5" src="mpctmpdemo_01.png" alt=""> <p>The MPC controller is represented by an MPC object in the workspace. It can be viewed at the command line as follows:</p><pre class="codeinput">load <span class="string">MPCtmpdemo</span>;
+MPC1
+</pre><pre class="codeoutput"> 
+MPC object (created on 30-Mar-2004 17:20:31):
+---------------------------------------------
+Sampling time:      0.5Prediction Horizon: 20Control Horizon:    5
+Model:
+          Plant: [6x5 ss]
+          Noise: [6x6 ss]
+        Nominal: [1x1 struct]
+    Disturbance: []
+
+        Output disturbance model: user specified (type "getoutdist(MPC1)" for details)
+
+Details on Plant model: 
+                                    --------------
+      5  manipulated variables   --&gt;|  7 states  |
+                                    |            |--&gt;  6 measured outputs
+      0  measured disturbances   --&gt;|  5 inputs  |
+                                    |            |--&gt;  0 unmeasured outputs
+      0  unmeasured disturbances --&gt;|  6 outputs |
+                                    --------------
+Weights:
+        ManipulatedVariables: [0 0 0 0 0]
+    ManipulatedVariablesRate: [0.1000 10 0.1000 10 0.1000]
+             OutputVariables: [0 10 0 1 10 1]
+                         ECR: 1000000
+
+Constraints:
+                   0 &lt;= Feed rpm (rpm) &lt;= 35,                 -10 &lt;= Feed rpm/rate (rpm) &lt;= Inf,       -Inf &lt;= Pri. vibration &lt;= 1
+                0 &lt;= Pri. gap set point &lt;= 1,             -10 &lt;= Pri. gap set point/rate &lt;= Inf,  -Inf &lt;= Pri. consistency &lt;= 0.45
+ 70 &lt;= Pri. dil. flow set point (gpm) &lt;= 250, -10 &lt;= Pri. dil. flow set point/rate (gpm) &lt;= Inf,       -Inf &lt;= Sec. vibration &lt;= 1
+                             ...............                                    ...............                    ...............
+  70 &lt;= Sec. dil flow set point (gpm) &lt;= 250,  -10 &lt;= Sec. dil flow set point/rate (gpm) &lt;= Inf, -Inf &lt;= Sec. motor load (MW) &lt;= 9
+</pre><p>The controller was built by obtaining a linear plant model from the non-linear TMP Simulink&reg; model using the MPC GUI (accessible from the "Design..." button on the MPC Controller mask) and then tuning the MPC controller from within the MPC GUI.</p><h2>Tuning the Controller Using the MPC GUI<a name="7"></a></h2><p>The controller design parameters can be viewed by opening the MPC GUI from the MPC mask then hitting the "Design..." button. The following window will open:</p><p><img vspace="5" hspace="5" src="mpcgui1.jpg" alt=""> </p><p>Controller weights can be viewed by selecting the controller node representing MPC1 and then selecting the "Weights" tab:</p><p><img vspace="5" hspace="5" src="mpcgui2.jpg" alt=""> </p><p>The effect of design changes can be observed in the GUI by clicking on the "Scenarios" node to create a new Simulation scenario. The following shows the setup for Simulating a setpoint change on the primary refiner motor load from 8 to 9 MW without model mismatch. The results are displayed in separate figure windows:</p><p><img vspace="5" hspace="5" src="mpcgui3.jpg" alt=""> </p><p><img vspace="5" hspace="5" src="idealIn.png" alt=""> </p><p><img vspace="5" hspace="5" src="idealOut.png" alt=""> </p><h2>Simulating the Design in Simulink&reg;<a name="8"></a></h2><p>The controller can be tested on the non-linear plant by running the simulation in Simulink&reg;. Any design changes made in the MPC GUI will automatically be tracked by the MPC mask, so there is no need to export the design back to the workspace. The output of the 3 scopes show the response to an initial set point of:</p><div><ul><li>Primary consistency 0.4</li><li>Primary motor load 8.5 MW</li><li>secondary consistency 0.3</li><li>secondary motor load of 6 MW</li></ul></div><p><img vspace="5" hspace="5" src="mpctmpscopes.jpg" alt=""> </p><pre class="codeinput">bdclose(<span class="string">'tmpdemo'</span>)
+</pre><p class="footer">Copyright 2004-2009 The MathWorks, Inc.<br>
+          Published with MATLAB&reg; 7.10</p><p class="footer" id="trademarks">MATLAB and Simulink are registered trademarks of The MathWorks, Inc.  Please see <a href="http://www.mathworks.com/trademarks">www.mathworks.com/trademarks</a> for a list of other trademarks owned by The MathWorks, Inc.  Other product or brand names are trademarks or registered trademarks of their respective owners.</p></div><!--
+##### SOURCE BEGIN #####
+%% MPC Supervisory Control of a Two Stage Thermo-Mechanical Pulping Process
+
+%%
+% This demo illustrates control of a thermo-mechanical pulping (TMP) 
+% application using MPC. 
+%
+% Copyright 2004-2009 The MathWorks, Inc.
+% $Revision: 1.1.4.10 $  $Date: 2009/09/21 00:04:32 $   
+
+%% Plant Description
+% The following diagram shows a typical process arrangement for a two 
+% stage TMP operation. Two pressured refiners operate in sequence to
+% produce a mechanical pulp suitable for making newsprint.
+%
+% A primary objective of controlling the TMP plant is to regulate the
+% energy applied to the pulp by the electric motors which drive each
+% refiner to derive pulp with good physical properties without incurring 
+% excess energy costs. 
+%
+% A secondary control objective is to regulate the ratio of dry mass flow
+% rate to overall mass flow rate (known as consistency) measured at the
+% outlet of each refiner. 
+% 
+% In practice these objectives amount to regulating the primary and
+% secondary refiner motor loads and the primary and secondary refiner
+% constancies subject to the following output constraints: 
+%
+% (1) Power on each refiner must be less than maximum rated values rated. 
+%
+% (2) Maintain the vibration level on the two refiners below a critical
+% level defined to prevent refiner plate clash.
+%
+% (3) Limits on measured consistency to prevent blow line plugging and
+% fiber damage. 
+%
+% Manipulated variables comprise:
+%
+% * set points to the two gap controllers regulating the distance between the refiner plates 
+% * the dilution flow rates to the two refiners
+% * the rpm of the screw feeder
+%
+% Physical limits are also imposed on each of these inputs.
+%
+% <<tmpplant.jpg>>
+%
+
+%% Modeling of the TMP Plant in Simulink(R)
+if ~mpcchecktoolboxinstalled('simulink')
+    disp('Simulink(R) is required to run this demo.')
+    return
+end
+
+%%
+% The following Simulink(R) model represents a TMP plant and an MPC Controller
+% designed for the control objectives described above. The model can be
+% opened with:
+open_system('TMPdemo')
+
+%%
+% The MPC controller is represented by an MPC object in the workspace. It 
+% can be viewed at the command line as follows:
+load MPCtmpdemo;
+MPC1
+
+%%
+% The controller was built by obtaining a linear plant model
+% from the non-linear TMP Simulink(R) model using the MPC GUI (accessible from
+% the "Design..." button on the MPC Controller mask) and then tuning the
+% MPC controller from within the MPC GUI. 
+
+%% Tuning the Controller Using the MPC GUI
+% The controller design parameters can be viewed by opening the MPC GUI
+% from the MPC mask then hitting the "Design..." button. The following window
+% will open:
+%
+% <<mpcgui1.jpg>>
+%
+% Controller weights can be viewed by selecting the controller node representing
+% MPC1 and then selecting the "Weights" tab:
+%
+% <<mpcgui2.jpg>>
+%
+% The effect of design changes can be observed in the GUI by clicking on the
+% "Scenarios" node to create a new Simulation scenario. The following shows
+% the setup for Simulating a setpoint change on the primary refiner motor
+% load from 8 to 9 MW without model mismatch. The results are displayed in
+% separate figure windows: 
+%
+% <<mpcgui3.jpg>>
+%
+% <<idealIn.png>>
+%
+% <<idealOut.png>>
+%
+
+%% Simulating the Design in Simulink(R)
+% The controller can be tested on the non-linear plant by running the
+% simulation in Simulink(R). Any design changes made in the MPC GUI will
+% automatically be tracked by the MPC mask, so there is no need to export
+% the design back to the workspace. The output of the 3 scopes show 
+% the response to an initial set point of:
+%
+% * Primary consistency 0.4
+% * Primary motor load 8.5 MW
+% * secondary consistency 0.3
+% * secondary motor load of 6 MW
+%
+% <<mpctmpscopes.jpg>>
+%
+
+%%
+bdclose('tmpdemo')
+displayEndOfDemoMessage(mfilename)
+
+##### SOURCE END #####
+--></body></html>

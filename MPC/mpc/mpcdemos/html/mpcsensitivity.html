@@ -1,0 +1,207 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   <!--
+This HTML is auto-generated from an M-file.
+To make changes, update the M-file and republish this document.
+      --><title>Sensitivity Analysis Based MPC Tuning</title><meta name="generator" content="MATLAB 7.10"><meta name="date" content="2010-01-05"><meta name="m-file" content="mpcsensitivity"><link rel="stylesheet" type="text/css" href="../../../matlab/demos/private/style.css"></head><body><div class="header"><div class="left"><a href="matlab:edit mpcsensitivity">Open mpcsensitivity.m in the Editor</a></div><div class="right"><a href="matlab:echodemo mpcsensitivity">Run in the Command Window</a></div></div><div class="content"><h1>Sensitivity Analysis Based MPC Tuning</h1><!--introduction--><!--/introduction--><h2>Contents</h2><div><ul><li><a href="#2">Plant Model</a></li><li><a href="#3">Controller Setup</a></li><li><a href="#8">Performance Evaluation Setup</a></li><li><a href="#11">Simulation Setup</a></li><li><a href="#12">Compute Sensitivities</a></li><li><a href="#13">Adjust MPC Weights</a></li><li><a href="#17">Verify Performance Changes</a></li><li><a href="#18">Verify Cumulative Performance Index is Reduced</a></li><li><a href="#20">Use a User-Defined Performance Function</a></li></ul></div><p>This demonstration shows how to compute numerical derivatives of a closed-loop cumulative performance index with respect to weights and use them to improve MPC performance.</p><h2>Plant Model<a name="2"></a></h2><pre class="codeinput">mpcverbosity(<span class="string">'off'</span>)
+plant = ss(tf({1,1,2;1 -1 -1},{[1 0 0],[1 0 0],[1 1];[1 2 8],[1 3],[1 1 3]}),<span class="string">'min'</span>);
+</pre><h2>Controller Setup<a name="3"></a></h2><p>Create an MPC controller with initial design parameters.</p><pre class="codeinput">Ts = 0.1;           <span class="comment">% Sampling time</span>
+p = 20;             <span class="comment">% Prediction horizon</span>
+m = 3;              <span class="comment">% Control horizon</span>
+mpc1 = mpc(plant,Ts,p,m);
+</pre><p>Set constraints on manipulated variables and their rates of change.</p><pre class="codeinput"><span class="keyword">for</span> i = 1:3,
+    mpc1.MV(i).Min = -2;
+    mpc1.MV(i).Max = 2;
+    mpc1.MV(i).RateMin = -4;
+    mpc1.MV(i).RateMax = 4;
+<span class="keyword">end</span>
+</pre><p>Set weights on output variables.</p><pre class="codeinput">mpc1.Weights.OutputVariables = [1 1];
+</pre><p>Set weights on the rates of manipulated variables.</p><pre class="codeinput">mpc1.Weights.ManipulatedVariablesRate = [.1 .1 .1];
+</pre><p>Weights on manipulated variables remain as the default values [0 0 0].</p><h2>Performance Evaluation Setup<a name="8"></a></h2><p>The default closed-loop performance is expressed through a set of weights that reflect the desired closed-loop behavior.  The weights are contained in a structure with the same fields as the Weights property of an MPC object.</p><pre class="codeinput">PerformanceWeights = mpc1.weights;
+</pre><p>In this example we make output weights more important than weights on MV rates in evaluating closed-loop performance.</p><pre class="codeinput">PerformanceWeights.OutputVariables = [100 100];
+PerformanceWeights.ManipulatedVariablesRate = [1 1 1];
+</pre><p>Note that "PerformanceWeights" is only used in the cumulative performance index computation.  It is not related to the weights specified inside the MPC object.</p><h2>Simulation Setup<a name="11"></a></h2><p>In this example, we only inspect the setpoint tracking scenario for the sensitivity analysis.</p><pre class="codeinput">Tstop = 80;             <span class="comment">% time steps to simulate</span>
+r = ones(Tstop,1)*[1 1];<span class="comment">% set point signals</span>
+v = [];                 <span class="comment">% no measured disturbance</span>
+simopt = mpcsimopt;
+simopt.PlantInitialState = zeros(8,1);
+</pre><h2>Compute Sensitivities<a name="12"></a></h2><pre class="codeinput">[J1, Sens1] = sensitivity(mpc1, <span class="string">'ISE'</span>, PerformanceWeights, Tstop, r, v, simopt);
+disp(<span class="string">''</span>)
+disp(<span class="string">'--------------'</span>)
+disp(<span class="string">'Sensitivity analysis'</span>)
+disp(<span class="string">'--------------'</span>)
+disp(<span class="string">''</span>)
+fprintf(<span class="string">'Output weights:     dJ/dWy  = [%g, %g]\n'</span>,Sens1.OutputVariables);
+fprintf(<span class="string">'Input weights:      dJ/dWu  = [%g, %g, %g]\n'</span>,Sens1.ManipulatedVariables);
+fprintf(<span class="string">'Input-rate weights: dJ/dWdu = [%g, %g, %g]\n'</span>,Sens1.ManipulatedVariablesRate);
+disp(<span class="string">'--------------'</span>)
+disp(<span class="string">''</span>)
+</pre><pre class="codeoutput">--------------
+Sensitivity analysis
+--------------
+Output weights:     dJ/dWy  = [-27345.7, 27166]
+Input weights:      dJ/dWu  = [3.35253, -125.842, -35.1205]
+Input-rate weights: dJ/dWdu = [-7.29125, 10250.2, -8369.86]
+--------------
+</pre><h2>Adjust MPC Weights<a name="13"></a></h2><p>Since we always want to reduce closed-loop cumulative performance index J, in this example the derivatives with respect to output weights show that the weight on y1 should be increased, as the corresponding derivative is negative, while the weight on y2 should be decreased.</p><pre class="codeinput">mpc2 = mpc1;
+</pre><p>Sensitivity less than 0 suggests increasing output weight from 1 to 2.</p><pre class="codeinput">mpc2.Weights.OutputVariables(1) = 2;
+</pre><p>Sensitivity greater than 0 suggests decreasing output weight from 1 to 0.2.</p><pre class="codeinput">mpc2.Weights.OutputVariables(2) = 0.2;
+</pre><p>Note that the sensitivity analysis only tells you which direction to change the parameters, not how much.  Trial and error is expected.</p><h2>Verify Performance Changes<a name="17"></a></h2><pre class="codeinput">[y1, t1] = sim(mpc1, Tstop, r, v, simopt);
+[y2, t2] = sim(mpc2, Tstop, r, v, simopt);
+h = figure;
+subplot(211)
+plot(t2,r(:,1),t1,y1(:,1),t2,y2(:,1));grid
+legend(<span class="string">'reference'</span>,<span class="string">'original tuning'</span>,<span class="string">'new tuning'</span>)
+title(<span class="string">'Output #1'</span>)
+subplot(212)
+plot(t2,r(:,2),t1,y1(:,2),t2,y2(:,2));grid
+legend(<span class="string">'reference'</span>,<span class="string">'original tuning'</span>,<span class="string">'new tuning'</span>)
+title(<span class="string">'Output #2'</span>)
+</pre><img vspace="5" hspace="5" src="mpcsensitivity_01.png" alt=""> <h2>Verify Cumulative Performance Index is Reduced<a name="18"></a></h2><p>Recompute just the cumulative performance index using the same performance measure.</p><pre class="codeinput">J2 = sensitivity(mpc2, <span class="string">'ISE'</span>, PerformanceWeights, Tstop, r, v, simopt);
+fprintf(<span class="string">'Previous Cumulative Performance Index J1 = %g\n'</span>,J1);
+fprintf(<span class="string">'New Cumulative Performance Index J2 = %g\n'</span>,J2);
+</pre><pre class="codeoutput">Previous Cumulative Performance Index J1 = 128645
+New Cumulative Performance Index J2 = 116234
+</pre><p>Note that the absolute value of the cumulative performance index is not important.</p><h2>Use a User-Defined Performance Function<a name="20"></a></h2><p>This is an example of how to write a user-defined performance function used by the <tt>sensitivity</tt> method.  In this example, custom function <tt>mpc_performance_function.m</tt> illustrates how ISE performance index is implemented.</p><pre class="codeinput">J3 = sensitivity(mpc1,<span class="string">'mpc_performance_function'</span>,Tstop,r,PerformanceWeights);
+fprintf(<span class="string">'User Defined Cumulative Performance Index J3 = %g (same as J1).\n'</span>,J3);
+mpcverbosity(<span class="string">'on'</span>)
+</pre><pre class="codeoutput">User Defined Cumulative Performance Index J3 = 128645 (same as J1).
+</pre><p class="footer">Copyright 1990-2009 The MathWorks, Inc.<br>
+          Published with MATLAB&reg; 7.10</p><p class="footer" id="trademarks">MATLAB and Simulink are registered trademarks of The MathWorks, Inc.  Please see <a href="http://www.mathworks.com/trademarks">www.mathworks.com/trademarks</a> for a list of other trademarks owned by The MathWorks, Inc.  Other product or brand names are trademarks or registered trademarks of their respective owners.</p></div><!--
+##### SOURCE BEGIN #####
+%% Sensitivity Analysis Based MPC Tuning
+
+%%
+% This demonstration shows how to compute numerical derivatives of a
+% closed-loop cumulative performance index with respect to weights and use
+% them to improve MPC performance. 
+%
+% Copyright 1990-2009 The MathWorks, Inc.
+% $Revision: 1.1.8.4 $  $Date: 2009/09/21 00:04:30 $   
+
+%% Plant Model
+mpcverbosity('off')
+plant = ss(tf({1,1,2;1 -1 -1},{[1 0 0],[1 0 0],[1 1];[1 2 8],[1 3],[1 1 3]}),'min');
+
+%% Controller Setup
+% Create an MPC controller with initial design parameters.
+Ts = 0.1;           % Sampling time
+p = 20;             % Prediction horizon
+m = 3;              % Control horizon
+mpc1 = mpc(plant,Ts,p,m);
+
+%%
+% Set constraints on manipulated variables and their rates of change.
+for i = 1:3,
+    mpc1.MV(i).Min = -2;
+    mpc1.MV(i).Max = 2;
+    mpc1.MV(i).RateMin = -4;
+    mpc1.MV(i).RateMax = 4;
+end
+
+%%
+% Set weights on output variables.
+mpc1.Weights.OutputVariables = [1 1];
+%%
+% Set weights on the rates of manipulated variables.
+mpc1.Weights.ManipulatedVariablesRate = [.1 .1 .1];
+%%
+% Weights on manipulated variables remain as the default values [0 0 0].
+
+%% Performance Evaluation Setup
+% The default closed-loop performance is expressed through a set of weights
+% that reflect the desired closed-loop behavior.  The weights are contained
+% in a structure with the same fields as the Weights property of an MPC
+% object.
+PerformanceWeights = mpc1.weights; 
+
+%% 
+% In this example we make output weights more important than weights on MV
+% rates in evaluating closed-loop performance.
+PerformanceWeights.OutputVariables = [100 100]; 
+PerformanceWeights.ManipulatedVariablesRate = [1 1 1]; 
+%%
+% Note that "PerformanceWeights" is only used in the cumulative performance
+% index computation.  It is not related to the weights specified inside the
+% MPC object.  
+
+%% Simulation Setup
+% In this example, we only inspect the setpoint tracking scenario for the
+% sensitivity analysis.
+Tstop = 80;             % time steps to simulate
+r = ones(Tstop,1)*[1 1];% set point signals
+v = [];                 % no measured disturbance
+simopt = mpcsimopt;
+simopt.PlantInitialState = zeros(8,1);
+
+%% Compute Sensitivities
+[J1, Sens1] = sensitivity(mpc1, 'ISE', PerformanceWeights, Tstop, r, v, simopt);
+disp('')
+disp('REPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASH')
+disp('Sensitivity analysis')
+disp('REPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASH')
+disp('')
+fprintf('Output weights:     dJ/dWy  = [%g, %g]\n',Sens1.OutputVariables);
+fprintf('Input weights:      dJ/dWu  = [%g, %g, %g]\n',Sens1.ManipulatedVariables);
+fprintf('Input-rate weights: dJ/dWdu = [%g, %g, %g]\n',Sens1.ManipulatedVariablesRate);
+disp('REPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASH')
+disp('')
+
+%% Adjust MPC Weights
+% Since we always want to reduce closed-loop cumulative performance index
+% J, in this example the derivatives with respect to output weights show
+% that the weight on y1 should be increased, as the corresponding
+% derivative is negative, while the weight on y2 should be decreased.   
+mpc2 = mpc1;
+
+%% 
+% Sensitivity less than 0 suggests increasing output weight from 1 to 2.
+mpc2.Weights.OutputVariables(1) = 2;   
+%%
+% Sensitivity greater than 0 suggests decreasing output weight from 1 to 0.2.
+mpc2.Weights.OutputVariables(2) = 0.2; 
+%%
+% Note that the sensitivity analysis only tells you which direction to
+% change the parameters, not how much.  Trial and error is expected.
+
+%% Verify Performance Changes
+[y1, t1] = sim(mpc1, Tstop, r, v, simopt);
+[y2, t2] = sim(mpc2, Tstop, r, v, simopt);
+h = figure;
+subplot(211)
+plot(t2,r(:,1),t1,y1(:,1),t2,y2(:,1));grid
+legend('reference','original tuning','new tuning')
+title('Output #1')
+subplot(212)
+plot(t2,r(:,2),t1,y1(:,2),t2,y2(:,2));grid
+legend('reference','original tuning','new tuning')
+title('Output #2')
+
+%% Verify Cumulative Performance Index is Reduced
+% Recompute just the cumulative performance index using the same performance
+% measure. 
+J2 = sensitivity(mpc2, 'ISE', PerformanceWeights, Tstop, r, v, simopt);
+fprintf('Previous Cumulative Performance Index J1 = %g\n',J1);
+fprintf('New Cumulative Performance Index J2 = %g\n',J2);
+%%
+% Note that the absolute value of the cumulative performance index is not
+% important.
+
+%% Use a User-Defined Performance Function
+% This is an example of how to write a user-defined performance function
+% used by the |sensitivity| method.  In this example, custom function 
+% |mpc_performance_function.m| illustrates how ISE performance index is
+% implemented.
+%
+J3 = sensitivity(mpc1,'mpc_performance_function',Tstop,r,PerformanceWeights);
+fprintf('User Defined Cumulative Performance Index J3 = %g (same as J1).\n',J3);
+mpcverbosity('on')
+
+%%
+displayEndOfDemoMessage(mfilename)
+
+##### SOURCE END #####
+--></body></html>

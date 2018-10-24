@@ -1,0 +1,27 @@
+% Copyright 2008 The MathWorks, Inc.
+% $Revision: 1.1.8.2 $  $Date: 2008/10/31 06:21:15 $
+
+<()InvalidSetpointOption
+>()In the "%s" command, "ref_preview" must be a string of either "on" or "off".
+
+<()InvalidMDOption
+>()In the "%s" command, "md_preview" must be a string of either "on" or "off".
+
+<()InvalidTrimY
+>()In the "%s" command, "y" must be a finite real vector with %d components.
+
+<()InvalidTrimU
+>()In the "%s" command, "u" must be a finite real vector with %d components.
+
+<()InvalidTrimD
+>()In the "%s" command, the part of "u" that represents unmeasured disturbance signals must be zero.
+
+<()SensitivityDefault
+>()No MPC weights defined for cumulative performance, assuming weights defined in controller.
+
+<()SensitivityInvalidWeights
+>()Invalid weights.  Number of I/O variables should match.
+
+<()SensitivityInvalidPerfFunc
+>()Supplied performance function must return a scalar.
+

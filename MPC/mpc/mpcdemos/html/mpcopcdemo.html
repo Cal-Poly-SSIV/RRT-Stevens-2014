@@ -1,0 +1,276 @@
+<html xmlns:mwsh="http://www.mathworks.com/namespace/mcode/v1/syntaxhighlight.dtd">
+   <head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   
+      <!--
+This HTML is auto-generated from an M-file.
+To make changes, update the M-file and republish this document.
+      -->
+      <title>On-Line Implementation of MPC Using OPC Toolbox&#8482;</title>
+      <meta name="generator" content="MATLAB 7.1">
+      <meta name="date" content="2005-06-09">
+      <meta name="m-file" content="mpcopcdemo">
+      <link rel="stylesheet" type="text/css" href="../../../matlab/demos/private/style.css">
+   </head>
+   <body>
+      <div class="header">
+         <div class="left"><a href="matlab:edit mpcopcdemo">Open mpcopcdemo.m in the Editor</a></div>
+         <div class="right"><a href="matlab:echodemo mpcopcdemo">Run in the Command Window</a></div>
+      </div>
+      <div class="content">
+         <h1>On-Line Implementation of MPC Using OPC Toolbox&#8482;</h1>
+         <introduction>
+            <p>This demo (Windows(R) only) implements an MPC object as an online control application using the OPC client supplied with OPC Toolbox&#8482;. The
+               demo uses the (free) Matrikon&#8482; Simulation OPC server to simulate the behavior of an industrial process.
+            </p>
+         </introduction>
+         <h2>Contents</h2>
+         <div>
+            <ul>
+               <li><a href="#1">Download the Matrikon&#8482; OPC Simulation Server from "www.matrikon.com"</a></li>
+               <li><a href="#2">Establish a Connection to the OPC Server</a></li>
+               <li><a href="#3">Set up the Plant OPC I/O</a></li>
+               <li><a href="#4">Specify the MPC Controller Which Will Control the Simulated Plant</a></li>
+               <li><a href="#5">Build the OPC I/O for the MPC Controller</a></li>
+               <li><a href="#6">Build OPC Groups to Trigger Execution of the Plant Simulator &amp; Controller</a></li>
+               <li><a href="#7">Log Data From the Plant Measured Outputs</a></li>
+               <li><a href="#8">Extract and Plot the Logged Data</a></li>
+            </ul>
+         </div>
+         <h2>Download the Matrikon&#8482; OPC Simulation Server from "www.matrikon.com"<a name="1"></a></h2>
+         <p>Download and install the server and set it running either as a service or as an application. Note that this demo requires
+            OPC Toolbox&#8482;.
+         </p>
+         <h2>Establish a Connection to the OPC Server<a name="2"></a></h2><pre class="codeinput"><span class="keyword">if</span> ~mpcchecktoolboxinstalled('opc')
+    disp(<span class="string">'The demo requires OPC Toolbox&#8482;'</span>)
+    <span class="keyword">return</span>
+<span class="keyword">end</span>
+<span class="keyword">try</span>
+    opcreset <span class="comment">% Clear any existing opc connections.</span>
+    clear <span class="string">mpcopcPlantStep</span>; <span class="comment">% Flush the callback persistent variables.</span>
+    clear <span class="string">mpcopcMPCStep</span>;
+    h = opcda(<span class="string">'localhost'</span>,<span class="string">'Matrikon.OPC.Simulation.1'</span>);
+    connect(h);
+<span class="keyword">catch ME</span>
+    disp(<span class="string">'The Matrikon&#8482; OPC Simulation Server must be running on the local machine'</span>)
+    return
+<span class="keyword">end</span>
+</pre><h2>Set up the Plant OPC I/O<a name="3"></a></h2>
+         <p>In practice the plant would be a physical process, and the OPC tags which define its I/O would already have been created on
+            the OPC server. However, since in this case a simulation OPC server is being used, the plant behavior must be simulated. This
+            is achieved by defining tags for the plant manipulated and measured variables and creating a callback (mpcopcPlantStep) to
+            simulate plant response to changes in the manipulated variables. Two OPC groups are required, one to represent the two manipulated
+            variables to be read by the plant simulator and another to write back the two measured plant outputs storing the results of
+            the plant simulation.
+         </p><pre class="codeinput"><span class="comment">% Build an opc group for 2 plant inputs and initialize them to zero.</span>
+plant_read = addgroup(h,<span class="string">'plant_read'</span>);
+imv1 = additem(plant_read,<span class="string">'Bucket Brigade.Real8'</span>, <span class="string">'double'</span>);
+writeasync(imv1,0);
+imv2 = additem(plant_read,<span class="string">'Bucket Brigade.Real4'</span>, <span class="string">'double'</span>);
+writeasync(imv2,0);
+<span class="comment">% Build an opc group for plant outputs.</span>
+plant_write = addgroup(h,<span class="string">'plant_write'</span>);
+opv1 = additem(plant_write,<span class="string">'Bucket Brigade.Time'</span>, <span class="string">'double'</span>);
+opv2 = additem(plant_write,<span class="string">'Bucket Brigade.Money'</span>, <span class="string">'double'</span>);
+set(plant_write,<span class="string">'WriteAsyncFcn'</span>,[]) <span class="comment">% Suppress command line display.</span>
+<span class="comment">% Create plant model.</span>
+plant_model = ss([-.2 -.1; 0 -.05],eye(2,2),eye(2,2),zeros(2,2));
+disc_plant_model = c2d(plant_model,1);
+</pre><h2>Specify the MPC Controller Which Will Control the Simulated Plant<a name="4"></a></h2>
+         <p>We assume no model mismatch, a control horizon 6 samples and prediction horizon 20 samples</p><pre class="codeinput">mpcobj = mpc(disc_plant_model,1);
+set(mpcobj,<span class="string">'P'</span>,20,<span class="string">'ControlHorizon'</span>,6);
+mpcobj.weights.ManipulatedVariablesRate = [1 1];
+<span class="comment">% Build an internal MPC object structure so that the MPC object</span>
+<span class="comment">% is not rebuilt each callback execution.</span>
+state = mpcstate(mpcobj);
+y1 = mpcmove(mpcobj,state,[1;1]',[1 1]');
+</pre><pre class="codeoutput">--&gt;No value for PredictionHorizon supplied. Trying PredictionHorizon=10.
+--&gt;No ControlHorizon specified. Assuming ControlHorizon=2
+--&gt;No Weights.ManipulatedVariables specified, assuming default 0.00000
+--&gt;No Weights.ManipulatedVariablesRate specified, assuming default 0.10000
+--&gt;No Weights.OutputVariables specified, assuming default 1.00000
+--&gt;Integrated white noise added on measured output channel #1
+--&gt;Integrated white noise added on measured output channel #2
+--&gt;No Model.Noise specified, assuming white noise on each measured output channel
+</pre><h2>Build the OPC I/O for the MPC Controller<a name="5"></a></h2>
+         <p>Build two OPC groups, one to read the two measured plant outputs and the other to write back the two manipulated variables.</p><pre class="codeinput"><span class="comment">% Build an opc group for MPC inputs.</span>
+mpc_read = addgroup(h,<span class="string">'mpc_read'</span>);
+impcpv1 = additem(mpc_read,<span class="string">'Bucket Brigade.Time'</span>, <span class="string">'double'</span>);
+writeasync(impcpv1,0);
+impcpv2 = additem(mpc_read,<span class="string">'Bucket Brigade.Money'</span>, <span class="string">'double'</span>);
+writeasync(impcpv2,0);
+impcref1 = additem(mpc_read,<span class="string">'Bucket Brigade.Int2'</span>, <span class="string">'double'</span>);
+writeasync(impcref1,1);
+impcref2 = additem(mpc_read,<span class="string">'Bucket Brigade.Int4'</span>, <span class="string">'double'</span>);
+writeasync(impcref2,1);
+<span class="comment">% Build an opc group for mpc outputs.</span>
+mpc_write = addgroup(h,<span class="string">'mpc_write'</span>);
+additem(mpc_write,<span class="string">'Bucket Brigade.Real8'</span>, <span class="string">'double'</span>);
+additem(mpc_write,<span class="string">'Bucket Brigade.Real4'</span>, <span class="string">'double'</span>);
+set(mpc_write,<span class="string">'WriteAsyncFcn'</span>,[]); <span class="comment">% Suppress command line display.</span>
+</pre><h2>Build OPC Groups to Trigger Execution of the Plant Simulator &amp; Controller<a name="6"></a></h2>
+         <p>Build two opc groups based on the same external opc timer to trigger execution of both plant simulation and MPC execution
+            when the contents of the OPC time tag changes
+         </p><pre class="codeinput">gtime = addgroup(h,<span class="string">'time'</span>);
+time_tag = additem(gtime,<span class="string">'Triangle Waves.Real8'</span>);
+set(gtime,<span class="string">'UpdateRate'</span>,1);
+gtime.DataChangeFcn = {@mpcopcPlantStep plant_read plant_write disc_plant_model};
+gmpctime = addgroup(h,<span class="string">'mpctime'</span>);
+additem(gmpctime,<span class="string">'Triangle Waves.Real8'</span>);
+set(gmpctime,<span class="string">'UpdateRate'</span>,1);
+gmpctime.DataChangeFcn = {@mpcopcMPCStep mpc_read mpc_write mpcobj};
+</pre><h2>Log Data from the Plant Measured Outputs<a name="7"></a></h2>
+         <p>Log the plant measured outputs from tags 'Bucket Brigade.Money' and 'Bucket Brigade.Money'</p><pre class="codeinput">set(mpc_read,<span class="string">'RecordsToAcquire'</span>,40);
+start(mpc_read);
+<span class="keyword">while</span> mpc_read.RecordsAcquired &lt; mpc_read.RecordsToAcquire
+   pause(3)
+   fprintf(<span class="string">'Logging data: Record %d / %d'</span>,mpc_read.RecordsAcquired,<span class="keyword">...</span>
+       mpc_read.RecordsToAcquire)
+<span class="keyword">end</span>
+stop(mpc_read);
+</pre><pre class="codeoutput">Logging data: Record 5 / 40
+Logging data: Record 10 / 40
+Logging data: Record 15 / 40
+Logging data: Record 20 / 40
+Logging data: Record 25 / 40
+Logging data: Record 31 / 40
+Logging data: Record 36 / 40
+Logging data: Record 40 / 40
+</pre><h2>Extract and Plot the Logged Data<a name="8"></a></h2><pre class="codeinput">[itemID, value, quality, timeStamp, eventTime] = getdata(mpc_read,<span class="string">'double'</span>);
+plot((timeStamp(:,1)-timeStamp(1,1))*24*60*60,value)
+title(<span class="string">'Measured Outputs Logged from Tags Bucket Brigade.Time,Bucket Brigade.Money'</span>)
+xlabel(<span class="string">'Time (secs)'</span>);
+
+<span class="comment">%opcreset</span>
+</pre><img vspace="5" hspace="5" src="mpcopcdemo_01.png"> <p class="footer">Copyright 1990-2005 The MathWorks, Inc.<br>
+            Published with MATLAB&reg; 7.1<br></p>
+      </div>
+      <!--
+##### SOURCE BEGIN #####
+% This demo (Windows(R) only) implements an MPC object as an online control 
+% application using the OPC client supplied with OPC Toolbox(TM).
+% The demo uses the (free) Matrikon(TM) Simulation OPC server to simulate
+% the behavior of an industrial process.
+%
+% Copyright 1990-2009 The MathWorks, Inc.
+% $Revision: 1.1.6.10 $ $Date: 2009/11/09 16:28:21 $
+
+%% Download the Matrikon(TM) OPC Simulation Server from "www.matrikon.com"
+% Download and install the server and set it running either as a service 
+% or as an application. Note that this demo requires OPC Toolbox(TM).
+
+%% Establish a Connection to the OPC Server
+if ~mpcchecktoolboxinstalled('opc')
+    disp('The demo requires OPC Toolbox(TM).')
+    return
+end
+% Clear any existing opc connections.
+opcreset 
+% Flush the callback persistent variables.
+clear mpcopcPlantStep; 
+clear mpcopcMPCStep;
+try
+    h = opcda('localhost','Matrikon.OPC.Simulation.1');
+    connect(h);
+catch ME
+    disp('The Matrikon(TM) OPC Simulation Server must be running on the local machine.')
+    return
+end
+
+%% Set up the Plant OPC I/O
+% In practice the plant would be a physical process, and the OPC tags 
+% which define its I/O would already have been created on the OPC server.
+% However, since in this case a simulation OPC server is being used,
+% the plant behavior must be simulated. This is achieved by defining 
+% tags for the plant manipulated and measured variables and creating
+% a callback (mpcopcPlantStep) to simulate plant response to changes in
+% the manipulated variables. Two OPC groups are required, one to represent
+% the two manipulated variables to be read by the plant simulator and 
+% another to write back the two measured plant outputs storing the
+% results of the plant simulation.
+
+% Build an opc group for 2 plant inputs and initialize them to zero.
+plant_read = addgroup(h,'plant_read');
+imv1 = additem(plant_read,'Bucket Brigade.Real8', 'double');
+writeasync(imv1,0);
+imv2 = additem(plant_read,'Bucket Brigade.Real4', 'double');
+writeasync(imv2,0);
+% Build an opc group for plant outputs.
+plant_write = addgroup(h,'plant_write');
+opv1 = additem(plant_write,'Bucket Brigade.Time', 'double');
+opv2 = additem(plant_write,'Bucket Brigade.Money', 'double');
+set(plant_write,'WriteAsyncFcn',[]) % Suppress command line display.
+% Create plant model.
+plant_model = ss([-.2 -.1; 0 -.05],eye(2,2),eye(2,2),zeros(2,2));
+disc_plant_model = c2d(plant_model,1);
+
+%% Specify the MPC Controller Which Will Control the Simulated Plant
+% We assume no model mismatch, a control horizon 6 samples and prediction
+% horizon 20 samples.
+mpcobj = mpc(disc_plant_model,1);
+set(mpcobj,'P',20,'ControlHorizon',6);
+mpcobj.weights.ManipulatedVariablesRate = [1 1];
+% Build an internal MPC object structure so that the MPC obejct
+% is not rebuilt each callback execution.
+state = mpcstate(mpcobj);
+y1 = mpcmove(mpcobj,state,[1;1]',[1 1]'); 
+
+%% Build the OPC I/O for the MPC Controller 
+% Build two OPC groups, one to read the two measured plant outputs and the
+% other to write back the two meanipulated variables.
+
+% Build an opc group for MPC inputs.
+mpc_read = addgroup(h,'mpc_read');
+impcpv1 = additem(mpc_read,'Bucket Brigade.Time', 'double');
+writeasync(impcpv1,0);
+impcpv2 = additem(mpc_read,'Bucket Brigade.Money', 'double');
+writeasync(impcpv2,0);
+impcref1 = additem(mpc_read,'Bucket Brigade.Int2', 'double');
+writeasync(impcref1,1);
+impcref2 = additem(mpc_read,'Bucket Brigade.Int4', 'double');
+writeasync(impcref2,1);
+% Build an opc group for mpc outputs.
+mpc_write = addgroup(h,'mpc_write');
+additem(mpc_write,'Bucket Brigade.Real8', 'double');
+additem(mpc_write,'Bucket Brigade.Real4', 'double');
+% Suppress command line display.
+set(mpc_write,'WriteAsyncFcn',[]); 
+
+%% Build OPC Groups to Trigger Execution of the Plant Simulator & Controller
+% Build two opc groups based on the same external opc timer to trigger
+% execution of both plant simulation and MPC execution when the contents
+% of the OPC time tag chnages.
+gtime = addgroup(h,'time');
+time_tag = additem(gtime,'Triangle Waves.Real8');
+set(gtime,'UpdateRate',1);
+gtime.DataChangeFcn = {@mpcopcPlantStep plant_read plant_write disc_plant_model};
+gmpctime = addgroup(h,'mpctime');
+additem(gmpctime,'Triangle Waves.Real8');
+set(gmpctime,'UpdateRate',1);
+gmpctime.DataChangeFcn = {@mpcopcMPCStep mpc_read mpc_write mpcobj};
+
+%% Log Data from the Plant Measured Outputs
+% Log the plant measured outputs from tags 'Bucket Brigade.Money' and
+% 'Bucket Brigade.Money'.
+set(mpc_read,'RecordsToAcquire',40);
+start(mpc_read);
+while mpc_read.RecordsAcquired < mpc_read.RecordsToAcquire
+   pause(3)
+   fprintf('Logging data: Record %d / %d',mpc_read.RecordsAcquired,...
+       mpc_read.RecordsToAcquire)
+end
+stop(mpc_read);
+
+%% Extract and Plot the Logged Data
+[itemID, value, quality, timeStamp, eventTime] = getdata(mpc_read,'double'); 
+plot((timeStamp(:,1)-timeStamp(1,1))*24*60*60,value)
+title('Measured Outputs Logged from Tags Bucket Brigade.Time,Bucket Brigade.Money')
+xlabel('Time (secs)');
+
+%%
+displayEndOfDemoMessage(mfilename)
+
+##### SOURCE END #####
+-->
+   </body>
+</html>
